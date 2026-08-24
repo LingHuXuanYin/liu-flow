@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme; actual color tokens are set in Compose.
+         Splash style is used pre-Compose; the system draws ic_launcher + background. -->
+    <style name="Theme.Flow" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+    </style>
+
+    <style name="Theme.Flow.Splash" parent="Theme.Flow">
+        <item name="android:windowBackground">@color/splash_background</item>
+    </style>
+
+</resources>

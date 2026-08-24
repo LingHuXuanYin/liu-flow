@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">流 Flow</string>
+
+    <!-- Common -->
+    <string name="action_start">开始</string>
+    <string name="action_pause">暂停</string>
+    <string name="action_resume">继续</string>
+    <string name="action_abandon">放弃</string>
+    <string name="action_confirm">确认</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_share">分享</string>
+    <string name="action_export">导出</string>
+    <string name="action_save">保存</string>
+    <string name="action_skip">跳过</string>
+
+    <!-- Bottom nav -->
+    <string name="nav_focus">专注</string>
+    <string name="nav_record">记录</string>
+    <string name="nav_me">我的</string>
+
+    <!-- Focus screen -->
+    <string name="focus_title_ready">准备专注</string>
+    <string name="focus_label_status">准备中</string>
+    <string name="focus_label_status_running">专注中</string>
+    <string name="focus_label_status_paused">已暂停</string>
+    <string name="focus_label_status_completed">已完成</string>
+    <string name="focus_label_status_abandoned">已放弃</string>
+    <string name="focus_label_hint">轻触「开始」进入专注</string>
+    <string name="focus_input_task_label">现在做什么？</string>
+    <string name="focus_input_task_hint">例如：写 PRD、整理收件箱</string>
+    <string name="focus_label_category">分类</string>
+    <string name="focus_label_duration">时长</string>
+    <string name="focus_duration_custom">自定义</string>
+    <string name="focus_custom_title">自定义时长</string>
+    <string name="focus_custom_label">%1$d 分钟</string>
+    <string name="focus_custom_range_min">最少 5 分钟</string>
+    <string name="focus_custom_range_max">最多 90 分钟</string>
+
+    <!-- Running -->
+    <string name="running_label_focus">专注</string>
+    <string name="running_paused_title">已暂停</string>
+    <string name="running_paused_resume">继续</string>
+    <string name="running_paused_abandon">放弃</string>
+    <string name="running_paused_restart">重新开始</string>
+    <string name="running_restart_button">↻ 重新开始</string>
+    <string name="running_abandon_confirm">放弃这次专注？</string>
+    <string name="running_abandon_note">放弃后不会计入历史记录。</string>
+
+    <!-- Rest -->
+    <string name="rest_title">休息一下</string>
+    <string name="rest_subtitle">站起来走走吧</string>
+    <string name="rest_again">再来一次</string>
+    <string name="rest_finish">结束</string>
+
+    <!-- History -->
+    <string name="history_title">记录</string>
+    <string name="history_today_section">今日</string>
+    <string name="history_weekly_section">本周专注</string>
+    <string name="history_recent_section">最近专注</string>
+    <string name="history_today_count">%1$d 次</string>
+    <string name="history_today_minutes">%1$d 分钟</string>
+    <string name="history_empty">还没有专注记录，去开始第一次吧</string>
+    <string name="history_open_stats">完整统计</string>
+    <string name="history_open_weekly">周报</string>
+
+    <!-- Stats -->
+    <string name="stats_title">统计</string>
+    <string name="stats_overview">概览</string>
+    <string name="stats_kpi_count">次数</string>
+    <string name="stats_kpi_minutes">时长</string>
+    <string name="stats_kpi_days">天数</string>
+    <string name="stats_kpi_completion">完成率</string>
+    <string name="stats_streak_title">连续专注</string>
+    <string name="stats_streak_days">连续 %1$d 天</string>
+    <string name="stats_streak_best">最佳 %1$d 天</string>
+    <string name="stats_weekly_chart_title">本周专注</string>
+    <string name="stats_category_7d_title">任务分类（7 天）</string>
+    <string name="stats_category_30d_title">任务分类（30 天）</string>
+    <string name="stats_daily_goal_title">每日目标</string>
+    <string name="stats_daily_goal_progress">%1$d / %2$d</string>
+    <string name="stats_heatmap_title">时段热力图</string>
+    <string name="stats_heatmap_open">查看完整</string>
+    <string name="stats_workday_weekend">工作日 vs 周末</string>
+    <string name="stats_workday">工作日 %1$.1fh</string>
+    <string name="stats_weekend">周末 %1$.1fh</string>
+    <string name="stats_records_best_day">单日最多</string>
+    <string name="stats_records_longest">最长单次</string>
+    <string name="stats_records_total_days">累计天数</string>
+    <string name="stats_records_total_minutes">累计时长</string>
+
+    <!-- Heatmap -->
+    <string name="heatmap_title">时段热力图</string>
+    <string name="heatmap_legend">少 — 专注次数 — 多</string>
+    <string name="heatmap_x_axis_hour">时</string>
+    <string name="heatmap_y_axis_weekday">周一</string>
+
+    <!-- Weekly -->
+    <string name="weekly_title">周报</string>
+    <string name="weekly_total_minutes">本周总时长 %1$d 分钟</string>
+    <string name="weekly_total_count">%1$d 次</string>
+    <string name="weekly_longest">最长单次 %1$d 分钟</string>
+
+    <!-- Me -->
+    <string name="me_title">我的</string>
+    <string name="me_section_personalize">个性化</string>
+    <string name="me_section_data">数据</string>
+    <string name="me_section_about">关于</string>
+    <string name="me_settings">设置</string>
+    <string name="me_export_csv">导出 CSV</string>
+    <string name="me_export_csv_sub">导出全部专注记录为 .csv 表格</string>
+    <string name="me_export_json_sub">导出全部专注记录为 .json 文档</string>
+    <string name="me_export_json">导出 JSON</string>
+    <string name="me_clear_data">清空所有数据</string>
+    <string name="me_about">关于流 Flow</string>
+    <string name="me_version">版本 %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings_title">设置</string>
+    <string name="settings_theme">主题</string>
+    <string name="settings_theme_classic">经典</string>
+    <string name="settings_theme_night">静夜</string>
+    <string name="settings_theme_forest">森林</string>
+    <string name="settings_theme_twilight">薄暮</string>
+    <string name="settings_dark_mode">深色模式</string>
+    <string name="settings_dark_system">跟随系统</string>
+    <string name="settings_dark_light">浅色</string>
+    <string name="settings_dark_dark">深色</string>
+    <string name="settings_daily_target">每日目标</string>
+    <string name="settings_daily_target_value">%1$d 次</string>
+    <string name="settings_sound">结束提示音</string>
+    <string name="settings_vibrate">结束震动</string>
+    <string name="settings_default_duration">默认专注时长</string>
+    <string name="settings_default_duration_value">%1$d 分钟</string>
+    <string name="settings_rest_duration">休息时长</string>
+    <string name="settings_rest_duration_value">%1$d 分钟</string>
+
+    <!-- Categories -->
+    <string name="category_writing">写作</string>
+    <string name="category_coding">编程</string>
+    <string name="category_reading">阅读</string>
+    <string name="category_studying">学习</string>
+    <string name="category_design">设计</string>
+    <string name="category_other">其他</string>
+
+    <!-- Confirm / alerts -->
+    <string name="confirm_clear_data_title">清空所有数据？</string>
+    <string name="confirm_clear_data_message">此操作不可恢复，所有专注记录将被永久删除。</string>
+</resources>

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>流 Flow · Android 原型</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#6750A4',
+              'on-primary': '#FFFFFF',
+              'primary-container': '#EADDFF',
+              'on-primary-container': '#21005D',
+              secondary: '#625B71',
+              'secondary-container': '#E8DEF8',
+              tertiary: '#7D5260',
+              surface: '#FEF7FF',
+              'surface-variant': '#E7E0EC',
+              'surface-container': '#F3EDF7',
+              'on-surface': '#1C1B1F',
+              'on-surface-variant': '#49454F',
+              outline: '#79747E',
+              'outline-variant': '#CAC4D0',
+              brand: '#6750A4',
+            },
+            fontFamily: {
+              sans: ['"Roboto"', '"Noto Sans SC"', 'system-ui', 'sans-serif'],
+              mono: ['"Roboto Mono"', '"SF Mono"', 'monospace'],
+            },
+            borderRadius: {
+              'xs': '4px', 'sm': '8px', 'md': '12px', 'lg': '16px', 'xl': '28px',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+        body {
+            font-family: 'Roboto', 'Noto Sans SC', system-ui, sans-serif;
+            background: #0a0a0a;
+            color: #fafafa;
+            -webkit-font-smoothing: antialiased;
+        }
+        .mono { font-family: 'Roboto Mono', 'SF Mono', monospace; }
+
+        /* Pixel 8/9 外框 */
+        .android-frame {
+            width: 412px;
+            height: 892px;
+            background: #1a1a1a;
+            border-radius: 48px;
+            padding: 8px;
+            box-shadow:
+                0 0 0 2px rgba(255,255,255,0.05),
+                0 0 0 6px #2a2a2a,
+                0 30px 80px -20px rgba(0,0,0,0.6),
+                0 50px 100px -20px rgba(103, 80, 164, 0.2);
+            position: relative;
+        }
+        .android-screen {
+            width: 100%;
+            height: 100%;
+            background: #FEF7FF;
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+        }
+        /* 前置摄像头打孔 */
+        .punch-hole {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 14px;
+            background: #000;
+            border-radius: 50%;
+            z-index: 50;
+        }
+        .android-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #FEF7FF;
+        }
+
+        /* Material 3 NavigationBar 激活态：Pill 形状 */
+        .nav-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .nav-card:hover {
+            transform: translateY(-4px);
+        }
+        .nav-card.active {
+            background: rgba(103, 80, 164, 0.12);
+            border-color: rgba(103, 80, 164, 0.4);
+        }
+        .nav-card.active .nav-num {
+            background: #6750A4;
+            color: #FFFFFF;
+        }
+        .nav-num {
+            transition: all 0.3s ease;
+        }
+
+        /* 状态层 */
+        .state-layer {
+            position: relative;
+            overflow: hidden;
+        }
+        .state-layer::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: currentColor;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        .state-layer:hover::after { opacity: 0.08; }
+        .state-layer:active::after { opacity: 0.12; }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+        .deco-blur {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+    </style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+
+    <div class="deco-blur" style="top: -200px; left: -200px; width: 600px; height: 600px; background: rgba(103, 80, 164, 0.15);"></div>
+    <div class="deco-blur" style="bottom: -200px; right: -200px; width: 500px; height: 500px; background: rgba(125, 82, 96, 0.08);"></div>
+
+    <header class="relative z-10 px-12 pt-12 pb-6">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                        <i class="fa-solid fa-droplet text-white text-sm"></i>
+                    </div>
+                    <span class="text-xs tracking-[0.3em] text-gray-400 uppercase">Flow / Android</span>
+                </div>
+                <h1 class="text-5xl font-light tracking-tight">
+                    流 · <span class="italic text-primary">Flow</span>
+                </h1>
+                <p class="text-gray-400 text-sm mt-3 max-w-lg leading-relaxed">
+                    Android 原型 · Material You / MD3 视觉风格 · 9 个核心页面 · 点击下方任意页面切换预览
+                </p>
+            </div>
+            <div class="text-right">
+                <div class="text-xs text-gray-500 tracking-widest">PROTOTYPE v0.2</div>
+                <div class="text-xs text-gray-500 mt-1">Pixel 8/9 · 412×892dp</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative z-10 px-12 pb-12">
+        <div class="max-w-7xl mx-auto grid grid-cols-12 gap-12">
+
+            <aside class="col-span-3">
+                <div class="sticky top-12">
+                    <div class="text-xs tracking-[0.3em] text-gray-500 uppercase mb-4">页面导航</div>
+                    <div class="space-y-2">
+
+                        <div onclick="showPage('focus')" data-page="focus" class="nav-card active p-4 rounded-xl border border-white/10 bg-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="nav-num w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-medium">01</div>
+                                <div>
+                                    <div class="text-sm font-medium">主屏</div>
+                                    <div class="text-xs text-gray-500">Focus · 计时器 + 分类</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div onclick="showPage('running')" data-page="running" class="nav-card p-4 rounded-xl border border-white/10 bg-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="nav-num w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-medium">02</div>
+                                <div>
+                                    <div class="text-sm font-medium">专注中</div>
+                                    <div class="text-xs text-gray-500">Running · 全屏</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div onclick="showPage('rest')" data-page="rest" class="nav-card p-4 rounded-xl border border-white/10 bg-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="nav-num w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-medium">03</div>
+                                <div>
+                                    <div class="text-sm font-medium">休息</div>
+                                    <div class="text-xs text-gray-500">Rest</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div onclick="showPage('history')" data-page="history" class="nav-card p-4 rounded-xl border border-white/10 bg-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="nav-num w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-medium">04</div>
+                                <div>
+                                    <div class="text-sm font-medium">记录</div>
+                                    <div class="text-xs text-gray-500">History · 7 天柱状</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div onclick="showPage('stats')" data-page="stats" class="nav-card p-4 rounded-xl border border-white/10 bg-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="nav-num w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-medium">05</div>
+                                <div>
+                                    <div class="text-sm font-medium">统计详情</div>
+                                    <div class="text-xs text-gray-500">Stats · ★ 重点</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div onclick="showPage('heatmap')" data-page="heatmap" class="nav-card p-4 rounded-xl border border-white/10 bg-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="nav-num w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-medium">06</div>
+                                <div>
+                                    <div class="text-sm font-medium">时段热力图</div>
+                                    <div class="text-xs text-gray-500">Heatmap · 7×24</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div onclick="showPage('weekly')" data-page="weekly" class="nav-card p-4 rounded-xl border border-white/10 bg-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="nav-num w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-medium">07</div>
+                                <div>
+                                    <div class="text-sm font-medium">周报</div>
+                                    <div class="text-xs text-gray-500">Weekly</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div onclick="showPage('me')" data-page="me" class="nav-card p-4 rounded-xl border border-white/10 bg-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="nav-num w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-medium">08</div>
+                                <div>
+                                    <div class="text-sm font-medium">我的</div>
+                                    <div class="text-xs text-gray-500">Me</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div onclick="showPage('settings')" data-page="settings" class="nav-card p-4 rounded-xl border border-white/10 bg-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="nav-num w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-medium">09</div>
+                                <div>
+                                    <div class="text-sm font-medium">设置</div>
+                                    <div class="text-xs text-gray-500">Settings</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-white/10">
+                        <div class="text-xs text-gray-500 leading-relaxed">
+                            设计：Material You<br>
+                            主色：#6750A4<br>
+                            字体：Roboto + Noto Sans SC
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="col-span-6 flex items-start justify-center">
+                <div class="android-frame fade-in" id="phoneFrame">
+                    <div class="android-screen">
+                        <div class="punch-hole"></div>
+                        <iframe id="phoneIframe" class="android-iframe" src="pages/focus.html"></iframe>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="col-span-3">
+                <div class="sticky top-12">
+                    <div class="text-xs tracking-[0.3em] text-gray-500 uppercase mb-4">当前页面</div>
+                    <div id="pageInfo">
+                        <h2 class="text-3xl font-light mb-2" id="pageTitle">主屏</h2>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-6" id="pageDesc">
+                            主屏：极简圆环 + 任务输入 + 6 个分类标签。点击 Extended FAB 开始 25 分钟专注。
+                        </p>
+
+                        <div class="space-y-3" id="pageFeatures">
+                            <div class="flex items-start gap-3 text-xs">
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0"></div>
+                                <span class="text-gray-400">TopAppBar (Medium 112dp)</span>
+                            </div>
+                            <div class="flex items-start gap-3 text-xs">
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0"></div>
+                                <span class="text-gray-400">6 个分类标签（FilterChip）</span>
+                            </div>
+                            <div class="flex items-start gap-3 text-xs">
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0"></div>
+                                <span class="text-gray-400">Extended FAB「开始」</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-white/10">
+                        <div class="text-xs tracking-[0.3em] text-gray-500 uppercase mb-3">快捷跳转</div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <button onclick="showPage(prev())" class="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 transition text-left">← 上一页</button>
+                            <button onclick="showPage(next())" class="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 transition text-left">下一页 →</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <script>
+        const pageData = {
+            focus: { title: '主屏', desc: '主屏：极简圆环 + 任务输入 + 6 个分类标签。点击 Extended FAB 开始 25 分钟专注。', features: ['TopAppBar (Medium 112dp)', '6 个分类标签（FilterChip）', 'Extended FAB「开始」'] },
+            running: { title: '专注中', desc: '全屏专注模式。圆环动画 + 中心时间 + 暂停/放弃按钮。屏蔽状态栏外的所有 UI。', features: ['大圆环 SVG 动画', 'Roboto Mono 等宽时间', '底部两个 Text Button'] },
+            rest: { title: '休息', desc: '5 分钟休息。圆环换灰色，提示站起来走一走。', features: ['自动跳转', '提示语 + 倒计时', '跳过按钮'] },
+            history: { title: '记录', desc: '7 天专注柱状图 + 历史列表。点击右上进入统计详情。', features: ['7 天柱状图 SVG', '完成列表', '进入统计 CTA'] },
+            stats: { title: '统计详情', desc: '★ 本次重点。4 个概览卡 + 7 天柱状 + 分类条形 + Streak + 目标环 + 时段热力图入口。', features: ['4 个数字概览卡', '按分类条形统计', '连续天数 + 最佳纪录', '目标完成度环'] },
+            heatmap: { title: '时段热力图', desc: '★ 本次重点。7 行（周一-周日）× 24 列（0-23h）= 168 格，颜色深度 = 专注次数。', features: ['168 格 SVG 网格', '5 档颜色透明度', '长按 tooltip'] },
+            weekly: { title: '周报', desc: '7 天专注报告。本周 vs 上周对比 + 分类分布。', features: ['本周 vs 上周', '分类环形', 'AI 总结'] },
+            me: { title: '我的', desc: '个人主页 + 数据卡 + 设置入口。', features: ['用户卡', '数据卡', '入口列表'] },
+            settings: { title: '设置', desc: '4 套主题色 + 时长 + 提醒 + 数据导出 + 清空。', features: ['主题色切换', '时长调整', '数据导出'] },
+        };
+
+        const order = ['focus', 'running', 'rest', 'history', 'stats', 'heatmap', 'weekly', 'me', 'settings'];
+        let currentIdx = 0;
+
+        function showPage(page) {
+            const data = pageData[page];
+            document.getElementById('phoneIframe').src = `pages/${page}.html`;
+            document.getElementById('pageTitle').textContent = data.title;
+            document.getElementById('pageDesc').textContent = data.desc;
+            const f = document.getElementById('pageFeatures');
+            f.innerHTML = data.features.map(x => `
+                <div class="flex items-start gap-3 text-xs">
+                    <div class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0"></div>
+                    <span class="text-gray-400">${x}</span>
+                </div>
+            `).join('');
+            document.querySelectorAll('.nav-card').forEach(c => c.classList.remove('active'));
+            document.querySelector(`[data-page="${page}"]`).classList.add('active');
+            currentIdx = order.indexOf(page);
+        }
+
+        function next() { return order[(currentIdx + 1) % order.length]; }
+        function prev() { return order[(currentIdx - 1 + order.length) % order.length]; }
+    </script>
+</body>
+</html>

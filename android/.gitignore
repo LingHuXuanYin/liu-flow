@@ -1,0 +1,29 @@
+# Build outputs
+build/
+.gradle/
+out/
+*.apk
+*.aab
+*.dex
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
+local.properties
+
+# Captures
+captures/
+*.hprof
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
+
+# Keystores (never commit)
+*.jks
+*.keystore
+release-key.properties

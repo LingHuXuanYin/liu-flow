@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>记录 · 流 Flow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&family=Roboto+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', 'Noto Sans SC', sans-serif; background: #FEF7FF; }
+        .mono { font-family: 'Roboto Mono', monospace; }
+    </style>
+</head>
+<body class="overflow-hidden">
+
+    <div class="w-full h-screen bg-surface text-on-surface flex flex-col">
+
+        <!-- 状态栏 -->
+        <div class="flex items-center justify-between px-6 pt-3 pb-1 text-xs">
+            <span class="mono font-medium">9:41</span>
+            <div class="flex items-center gap-1.5">
+                <i class="fa-solid fa-signal text-[10px]"></i>
+                <i class="fa-solid fa-wifi text-[10px]"></i>
+                <i class="fa-solid fa-battery-full text-[12px]"></i>
+            </div>
+        </div>
+
+        <!-- TopAppBar -->
+        <div class="px-6 pt-4 pb-3 flex items-center justify-between">
+            <h1 class="text-[28px] font-normal">记录</h1>
+            <button onclick="window.location.href='stats.html'" class="w-10 h-10 rounded-full state-layer flex items-center justify-center text-primary">
+                <i class="fa-solid fa-chart-column text-lg"></i>
+            </button>
+        </div>
+
+        <!-- 主体 -->
+        <div class="flex-1 overflow-y-auto pb-24 px-6">
+
+            <!-- 今日概览 -->
+            <div class="mb-5">
+                <div class="bg-surface-container rounded-3xl p-5">
+                    <div class="text-xs text-on-surface-variant tracking-wider mb-3">今日</div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <div class="mono text-3xl font-light">5</div>
+                            <div class="text-xs text-on-surface-variant mt-1">完成次数</div>
+                        </div>
+                        <div>
+                            <div class="mono text-3xl font-light">2<span class="text-base text-on-surface-variant">h</span>05<span class="text-base text-on-surface-variant">m</span></div>
+                            <div class="text-xs text-on-surface-variant mt-1">总时长</div>
+                        </div>
+                        <div>
+                            <div class="mono text-3xl font-light text-primary">12</div>
+                            <div class="text-xs text-on-surface-variant mt-1">连续天数</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7 天柱状图 -->
+            <div class="mb-5">
+                <div class="bg-surface-container rounded-3xl p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <div class="text-xs text-on-surface-variant tracking-wider mb-1">本周</div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="mono text-2xl font-light">14</span>
+                                <span class="text-xs text-on-surface-variant">次 · 5h 50m</span>
+                            </div>
+                        </div>
+                        <div class="text-xs text-primary font-medium">+18%</div>
+                    </div>
+
+                    <!-- SVG 柱状图 -->
+                    <div class="relative h-32">
+                        <svg viewBox="0 0 360 120" class="w-full h-full" preserveAspectRatio="none">
+                            <!-- 横向网格 -->
+                            <line x1="0" y1="20" x2="360" y2="20" stroke="#CAC4D0" stroke-width="0.5" stroke-dasharray="2 4" />
+                            <line x1="0" y1="60" x2="360" y2="60" stroke="#CAC4D0" stroke-width="0.5" stroke-dasharray="2 4" />
+                            <line x1="0" y1="100" x2="360" y2="100" stroke="#CAC4D0" stroke-width="0.5" stroke-dasharray="2 4" />
+                            <!-- 柱 -->
+                            <rect x="10"  y="80" width="32" height="40" rx="4" fill="#EADDFF" />
+                            <rect x="62"  y="60" width="32" height="60" rx="4" fill="#EADDFF" />
+                            <rect x="114" y="50" width="32" height="70" rx="4" fill="#6750A4" />
+                            <rect x="166" y="40" width="32" height="80" rx="4" fill="#6750A4" />
+                            <rect x="218" y="20" width="32" height="100" rx="4" fill="#6750A4" />
+                            <rect x="270" y="55" width="32" height="65" rx="4" fill="#6750A4" />
+                            <rect x="322" y="70" width="32" height="50" rx="4" fill="#EADDFF" />
+                        </svg>
+                    </div>
+                    <div class="flex justify-between text-[10px] text-on-surface-variant mt-2 px-1">
+                        <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 最近完成 -->
+            <div class="mb-5">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="text-sm font-medium">最近完成</div>
+                    <button class="text-xs text-primary font-medium">查看全部</button>
+                </div>
+                <div class="space-y-2">
+
+                    <div class="bg-surface-container rounded-2xl p-4 flex items-center gap-3 state-layer">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <i class="fa-solid fa-pen-fancy text-primary text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-sm font-medium">整理收件箱</div>
+                            <div class="text-xs text-on-surface-variant mt-0.5">写作 · 25 分钟</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="mono text-sm">14:23</div>
+                            <div class="text-[10px] text-on-surface-variant">刚刚</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-surface-container rounded-2xl p-4 flex items-center gap-3 state-layer">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <i class="fa-solid fa-code text-primary text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-sm font-medium">修复登录 Bug</div>
+                            <div class="text-xs text-on-surface-variant mt-0.5">编程 · 45 分钟</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="mono text-sm">10:32</div>
+                            <div class="text-[10px] text-on-surface-variant">今天</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-surface-container rounded-2xl p-4 flex items-center gap-3 state-layer">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <i class="fa-solid fa-book-open text-primary text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-sm font-medium">《深度工作》第 3 章</div>
+                            <div class="text-xs text-on-surface-variant mt-0.5">阅读 · 25 分钟</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="mono text-sm">09:15</div>
+                            <div class="text-[10px] text-on-surface-variant">今天</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-surface-container rounded-2xl p-4 flex items-center gap-3 state-layer">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <i class="fa-solid fa-pen-fancy text-primary text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-sm font-medium">产品周报</div>
+                            <div class="text-xs text-on-surface-variant mt-0.5">写作 · 25 分钟</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="mono text-sm">16:40</div>
+                            <div class="text-[10px] text-on-surface-variant">昨天</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- NavigationBar -->
+        <div class="absolute bottom-0 left-0 right-0 bg-surface-container border-t border-outline-variant/30">
+            <div class="flex items-stretch h-20 px-3">
+                <button class="flex-1 flex flex-col items-center justify-center gap-1 state-layer">
+                    <i class="fa-solid fa-droplet text-on-surface-variant text-lg"></i>
+                    <span class="text-[11px] text-on-surface-variant">专注</span>
+                </button>
+                <button class="flex-1 flex flex-col items-center justify-center gap-1 state-layer">
+                    <div class="px-5 py-1 rounded-full bg-primary-container">
+                        <i class="fa-solid fa-clock text-primary text-lg"></i>
+                    </div>
+                    <span class="text-[11px] font-medium text-on-surface">记录</span>
+                </button>
+                <button class="flex-1 flex flex-col items-center justify-center gap-1 state-layer">
+                    <i class="fa-regular fa-user text-on-surface-variant text-lg"></i>
+                    <span class="text-[11px] text-on-surface-variant">我的</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

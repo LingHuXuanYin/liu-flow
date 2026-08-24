@@ -1,0 +1,41 @@
+# ============================================================================
+# Top-level .gitignore for the Flow project
+# ----------------------------------------------------------------------------
+# Each sub-project (android/, prototype/) has its own .gitignore for
+# language-/tool-specific artifacts. This file only covers what would
+# otherwise leak in from the top level.
+# ============================================================================
+
+# --- OS / editor cruft ---
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.iml
+
+# --- Local-only files (do NOT commit) ---
+# Each developer / machine has its own:
+local.properties      # Android SDK path
+*.keystore
+*.jks
+release-key.properties
+
+# --- Python helper scripts we generated for writing reports ---
+# These are not part of the product; they are the AI's scratch tools
+# used during iterations and can be safely ignored.
+docs/_*.py
+
+# --- Anything matching a sensible "scratch" name ---
+# Catches ad-hoc exploration / temp files in the repo root.
+scratch*
+*~
+*_bak*
+
+# ============================================================================
+# Note: build outputs, .gradle caches, and the Android module's specific
+# rules live in android/.gitignore. The android/ subdir is fully
+# self-contained for ignore purposes.
+# ============================================================================

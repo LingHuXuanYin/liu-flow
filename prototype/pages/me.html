@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>我的 · 流 Flow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&family=Roboto+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', 'Noto Sans SC', sans-serif; background: #FEF7FF; }
+        .mono { font-family: 'Roboto Mono', monospace; }
+    </style>
+</head>
+<body class="overflow-hidden">
+
+    <div class="w-full h-screen bg-surface text-on-surface flex flex-col">
+
+        <!-- 状态栏 -->
+        <div class="flex items-center justify-between px-6 pt-3 pb-1 text-xs">
+            <span class="mono font-medium">9:41</span>
+            <div class="flex items-center gap-1.5">
+                <i class="fa-solid fa-signal text-[10px]"></i>
+                <i class="fa-solid fa-wifi text-[10px]"></i>
+                <i class="fa-solid fa-battery-full text-[12px]"></i>
+            </div>
+        </div>
+
+        <!-- 主体 -->
+        <div class="flex-1 overflow-y-auto pb-24">
+
+            <!-- 用户卡 -->
+            <div class="px-6 pt-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-[#4F378B] flex items-center justify-center text-white text-2xl font-light">
+                        林
+                    </div>
+                    <div class="flex-1">
+                        <h2 class="text-xl font-normal">林知夏</h2>
+                        <p class="text-xs text-on-surface-variant mt-1">在 Flow 共度 142 天</p>
+                    </div>
+                    <button class="w-9 h-9 rounded-full state-layer flex items-center justify-center text-on-surface-variant">
+                        <i class="fa-solid fa-arrow-right text-sm -rotate-45"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 终身统计 -->
+            <div class="px-5 pt-5">
+                <div class="bg-surface-container rounded-3xl p-5">
+                    <div class="text-[10px] text-on-surface-variant tracking-wider mb-3">终身</div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <div class="mono text-2xl font-light">286</div>
+                            <div class="text-[10px] text-on-surface-variant mt-1">专注次数</div>
+                        </div>
+                        <div>
+                            <div class="mono text-2xl font-light">112<span class="text-sm text-on-surface-variant">h</span></div>
+                            <div class="text-[10px] text-on-surface-variant mt-1">总时长</div>
+                        </div>
+                        <div>
+                            <div class="mono text-2xl font-light text-primary">28</div>
+                            <div class="text-[10px] text-on-surface-variant mt-1">最佳连续</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 功能列表 -->
+            <div class="px-5 pt-5">
+                <div class="text-[10px] text-on-surface-variant tracking-wider mb-2 px-1">功能</div>
+                <div class="bg-surface-container rounded-3xl divide-y divide-outline-variant/30">
+
+                    <div class="flex items-center gap-4 px-4 py-3.5 state-layer">
+                        <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                            <i class="fa-solid fa-chart-column text-primary text-sm"></i>
+                        </div>
+                        <div class="flex-1 text-sm">统计详情</div>
+                        <i class="fa-solid fa-chevron-right text-on-surface-variant text-xs"></i>
+                    </div>
+
+                    <div class="flex items-center gap-4 px-4 py-3.5 state-layer">
+                        <div class="w-9 h-9 rounded-full bg-tertiary/10 flex items-center justify-center">
+                            <i class="fa-solid fa-clock-rotate-left text-tertiary text-sm"></i>
+                        </div>
+                        <div class="flex-1 text-sm">历史周报</div>
+                        <i class="fa-solid fa-chevron-right text-on-surface-variant text-xs"></i>
+                    </div>
+
+                    <div class="flex items-center gap-4 px-4 py-3.5 state-layer">
+                        <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                            <i class="fa-solid fa-palette text-primary text-sm"></i>
+                        </div>
+                        <div class="flex-1 text-sm">主题色</div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-4 h-4 rounded-full bg-primary"></div>
+                            <span class="text-xs text-on-surface-variant">经典</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-on-surface-variant text-xs"></i>
+                    </div>
+
+                    <div class="flex items-center gap-4 px-4 py-3.5 state-layer">
+                        <div class="w-9 h-9 rounded-full bg-tertiary/10 flex items-center justify-center">
+                            <i class="fa-solid fa-bell text-tertiary text-sm"></i>
+                        </div>
+                        <div class="flex-1 text-sm">提醒</div>
+                        <span class="text-xs text-on-surface-variant">每日 9:00</span>
+                        <i class="fa-solid fa-chevron-right text-on-surface-variant text-xs"></i>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 数据 -->
+            <div class="px-5 pt-5">
+                <div class="text-[10px] text-on-surface-variant tracking-wider mb-2 px-1">数据</div>
+                <div class="bg-surface-container rounded-3xl divide-y divide-outline-variant/30">
+
+                    <div class="flex items-center gap-4 px-4 py-3.5 state-layer">
+                        <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                            <i class="fa-solid fa-download text-primary text-sm"></i>
+                        </div>
+                        <div class="flex-1 text-sm">导出数据</div>
+                        <span class="text-xs text-on-surface-variant">CSV · JSON</span>
+                        <i class="fa-solid fa-chevron-right text-on-surface-variant text-xs"></i>
+                    </div>
+
+                    <div class="flex items-center gap-4 px-4 py-3.5 state-layer">
+                        <div class="w-9 h-9 rounded-full bg-tertiary/10 flex items-center justify-center">
+                            <i class="fa-solid fa-shield-halved text-tertiary text-sm"></i>
+                        </div>
+                        <div class="flex-1 text-sm">隐私与数据</div>
+                        <i class="fa-solid fa-chevron-right text-on-surface-variant text-xs"></i>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 设置 -->
+            <div class="px-5 pt-5">
+                <div class="text-[10px] text-on-surface-variant tracking-wider mb-2 px-1">设置</div>
+                <div class="bg-surface-container rounded-3xl divide-y divide-outline-variant/30">
+
+                    <button onclick="window.location.href='settings.html'" class="w-full flex items-center gap-4 px-4 py-3.5 state-layer text-left">
+                        <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                            <i class="fa-solid fa-gear text-primary text-sm"></i>
+                        </div>
+                        <div class="flex-1 text-sm">设置</div>
+                        <i class="fa-solid fa-chevron-right text-on-surface-variant text-xs"></i>
+                    </button>
+
+                    <div class="flex items-center gap-4 px-4 py-3.5 state-layer">
+                        <div class="w-9 h-9 rounded-full bg-tertiary/10 flex items-center justify-center">
+                            <i class="fa-regular fa-circle-question text-tertiary text-sm"></i>
+                        </div>
+                        <div class="flex-1 text-sm">帮助与反馈</div>
+                        <i class="fa-solid fa-chevron-right text-on-surface-variant text-xs"></i>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="text-center text-[10px] text-on-surface-variant py-6">Flow v0.1.0</div>
+
+        </div>
+
+        <!-- NavigationBar -->
+        <div class="absolute bottom-0 left-0 right-0 bg-surface-container border-t border-outline-variant/30">
+            <div class="flex items-stretch h-20 px-3">
+                <button onclick="window.location.href='focus.html'" class="flex-1 flex flex-col items-center justify-center gap-1 state-layer">
+                    <i class="fa-solid fa-droplet text-on-surface-variant text-lg"></i>
+                    <span class="text-[11px] text-on-surface-variant">专注</span>
+                </button>
+                <button onclick="window.location.href='history.html'" class="flex-1 flex flex-col items-center justify-center gap-1 state-layer">
+                    <i class="fa-regular fa-clock text-on-surface-variant text-lg"></i>
+                    <span class="text-[11px] text-on-surface-variant">记录</span>
+                </button>
+                <button class="flex-1 flex flex-col items-center justify-center gap-1 state-layer">
+                    <div class="px-5 py-1 rounded-full bg-primary-container">
+                        <i class="fa-solid fa-user text-primary text-lg"></i>
+                    </div>
+                    <span class="text-[11px] font-medium text-on-surface">我的</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>专注中 · 流 Flow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&family=Roboto+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', 'Noto Sans SC', sans-serif; background: #1C1B1F; }
+        .mono { font-family: 'Roboto Mono', monospace; }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.4); opacity: 0; }
+        }
+        .pulse-circle { animation: pulse 3s ease-in-out infinite; }
+    </style>
+</head>
+<body class="overflow-hidden">
+
+    <div class="w-full h-screen bg-[#1C1B1F] text-white flex flex-col relative overflow-hidden">
+
+        <!-- 状态栏（深色模式下白字） -->
+        <div class="flex items-center justify-between px-6 pt-3 pb-1 text-xs">
+            <span class="mono font-medium">9:41</span>
+            <div class="flex items-center gap-1.5">
+                <i class="fa-solid fa-signal text-[10px]"></i>
+                <i class="fa-solid fa-wifi text-[10px]"></i>
+                <i class="fa-solid fa-battery-full text-[12px]"></i>
+            </div>
+        </div>
+
+        <!-- 顶部信息 -->
+        <div class="px-6 pt-3 pb-2 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                <span class="text-xs text-white/60 tracking-widest">正在专注</span>
+            </div>
+            <button class="w-9 h-9 rounded-full state-layer flex items-center justify-center text-white/60">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+
+        <!-- 任务名 -->
+        <div class="px-6 pt-2 pb-4 text-center">
+            <div class="text-[10px] tracking-[0.3em] text-white/40 mb-1">写作 · 25 分钟</div>
+            <h1 class="text-xl font-light text-white/90">整理收件箱</h1>
+        </div>
+
+        <!-- 圆环 -->
+        <div class="flex-1 flex items-center justify-center relative">
+            <!-- 背景呼吸光晕 -->
+            <div class="absolute w-72 h-72 rounded-full bg-primary/20 blur-3xl pulse-circle"></div>
+            <div class="absolute w-72 h-72 rounded-full bg-primary/10 blur-2xl pulse-circle" style="animation-delay: 1.5s;"></div>
+
+            <div class="relative">
+                <svg width="320" height="320" viewBox="0 0 320 320" class="-rotate-90">
+                    <circle cx="160" cy="160" r="146" fill="none" stroke="#3a3a3a" stroke-width="6" />
+                    <circle cx="160" cy="160" r="146" fill="none" stroke="#D0BCFF" stroke-width="6"
+                        stroke-dasharray="917" stroke-dashoffset="275" stroke-linecap="round"
+                        style="transition: stroke-dashoffset 1s linear;" />
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <div class="text-[10px] tracking-[0.3em] text-white/50 mb-2">REMAINING</div>
+                    <div class="mono text-[88px] font-light leading-none tracking-tighter text-white">14:23</div>
+                    <div class="text-sm text-white/40 mt-3 mono">15:24 / 25:00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部按钮 -->
+        <div class="px-8 pb-10 flex items-center justify-center gap-6">
+            <button class="flex flex-col items-center gap-1.5 state-layer px-6 py-2">
+                <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
+                    <i class="fa-solid fa-pause text-white text-lg"></i>
+                </div>
+                <span class="text-xs text-white/60">暂停</span>
+            </button>
+            <button class="flex flex-col items-center gap-1.5 state-layer px-6 py-2">
+                <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
+                    <i class="fa-solid fa-stop text-white text-lg"></i>
+                </div>
+                <span class="text-xs text-white/60">放弃</span>
+            </button>
+        </div>
+
+        <!-- 提示语 -->
+        <div class="absolute bottom-3 left-0 right-0 text-center text-[10px] text-white/30">
+            全屏专注模式 · 屏蔽通知
+        </div>
+
+    </div>
+
+</body>
+</html>

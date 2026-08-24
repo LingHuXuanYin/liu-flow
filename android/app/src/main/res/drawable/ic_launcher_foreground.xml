@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Adaptive launcher foreground for "流 Flow".
+  References the same 3D purple ribbon used for the legacy mipmap PNGs,
+  composited on a transparent background. Combined with the white
+  launcher_background color, this produces a white card with a purple
+  flowing curve — matching the reference icon design.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/ic_launcher_foreground_ribbon"
+        android:gravity="center" />
+</layer-list>

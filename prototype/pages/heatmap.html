@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>时段热力图 · 流 Flow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&family=Roboto+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', 'Noto Sans SC', sans-serif; background: #FEF7FF; }
+        .mono { font-family: 'Roboto Mono', monospace; }
+    </style>
+</head>
+<body class="overflow-hidden">
+
+    <div class="w-full h-screen bg-surface text-on-surface flex flex-col">
+
+        <!-- 状态栏 -->
+        <div class="flex items-center justify-between px-6 pt-3 pb-1 text-xs">
+            <span class="mono font-medium">9:41</span>
+            <div class="flex items-center gap-1.5">
+                <i class="fa-solid fa-signal text-[10px]"></i>
+                <i class="fa-solid fa-wifi text-[10px]"></i>
+                <i class="fa-solid fa-battery-full text-[12px]"></i>
+            </div>
+        </div>
+
+        <!-- TopAppBar -->
+        <div class="px-3 pt-2 pb-2 flex items-center justify-between">
+            <button onclick="window.location.href='stats.html'" class="w-10 h-10 rounded-full state-layer flex items-center justify-center">
+                <i class="fa-solid fa-arrow-left text-lg"></i>
+            </button>
+            <div class="text-sm font-medium">时段热力图</div>
+            <button class="w-10 h-10 rounded-full state-layer flex items-center justify-center text-on-surface-variant">
+                <i class="fa-solid fa-arrow-up-from-bracket text-base"></i>
+            </button>
+        </div>
+
+        <!-- 主体 -->
+        <div class="flex-1 overflow-y-auto pb-24 px-5">
+
+            <!-- 顶部说明 -->
+            <div class="mt-2 mb-5">
+                <h2 class="text-[22px] font-normal leading-tight mb-1">你是一只在 <span class="text-primary">上午 10 点</span> 准时上工的鸟</h2>
+                <p class="text-xs text-on-surface-variant leading-relaxed">过去 7 天 · 168 个时段</p>
+            </div>
+
+            <!-- 热力图卡片 -->
+            <div class="bg-surface-container rounded-3xl p-4 mb-5">
+                <div class="overflow-x-auto -mx-1 px-1">
+                    <svg viewBox="0 0 480 200" class="w-full" style="min-width: 440px;">
+                        <!-- 纵轴：周一到周日 -->
+                        <g font-size="9" fill="#49454F" font-family="Roboto">
+                            <text x="20" y="22" text-anchor="end">周一</text>
+                            <text x="20" y="48" text-anchor="end">周二</text>
+                            <text x="20" y="74" text-anchor="end">周三</text>
+                            <text x="20" y="100" text-anchor="end">周四</text>
+                            <text x="20" y="126" text-anchor="end">周五</text>
+                            <text x="20" y="152" text-anchor="end">周六</text>
+                            <text x="20" y="178" text-anchor="end">周日</text>
+                        </g>
+                        <!-- 168 个格子（7×24） -->
+                        <!-- 周一 -->
+                        <rect x="30" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="46" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="62" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="78" y="14" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="94" y="14" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="110" y="14" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="126" y="14" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="142" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="158" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="174" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="190" y="14" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="206" y="14" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="222" y="14" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="238" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="254" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="270" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="286" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="302" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="318" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="334" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="350" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="366" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="382" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="398" y="14" width="14" height="14" rx="2" fill="#EADDFF" />
+
+                        <!-- 周二 -->
+                        <rect x="30" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="46" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="62" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="78" y="40" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="94" y="40" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="110" y="40" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="126" y="40" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="142" y="40" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="158" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="174" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="190" y="40" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="206" y="40" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="222" y="40" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="238" y="40" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="254" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="270" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="286" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="302" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="318" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="334" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="350" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="366" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="382" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="398" y="40" width="14" height="14" rx="2" fill="#EADDFF" />
+
+                        <!-- 周三 -->
+                        <rect x="30" y="66" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="46" y="66" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="62" y="66" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="78" y="66" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="94" y="66" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="110" y="66" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="126" y="66" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="142" y="66" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="158" y="66" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="174" y="66" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="190" y="66" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="206" y="66" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="222" y="66" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="238" y="66" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="254" y="66" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="270" y="66" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="286" y="66" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="302" y="66" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="318" y="66" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="334" y="66" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="350" y="66" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="366" y="66" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="382" y="66" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="398" y="66" width="14" height="14" rx="2" fill="#EADDFF" />
+
+                        <!-- 周四 -->
+                        <rect x="30" y="92" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="46" y="92" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="62" y="92" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="78" y="92" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="94" y="92" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="110" y="92" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="126" y="92" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="142" y="92" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="158" y="92" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="174" y="92" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="190" y="92" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="206" y="92" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="222" y="92" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="238" y="92" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="254" y="92" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="270" y="92" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="286" y="92" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="302" y="92" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="318" y="92" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="334" y="92" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="350" y="92" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="366" y="92" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="398" y="92" width="14" height="14" rx="2" fill="#EADDFF" />
+
+                        <!-- 周五 -->
+                        <rect x="30" y="118" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="46" y="118" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="62" y="118" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="78" y="118" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="94" y="118" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="110" y="118" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="126" y="118" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="142" y="118" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="158" y="118" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="174" y="118" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="190" y="118" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="206" y="118" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="222" y="118" width="14" height="14" rx="2" fill="#6750A4" />
+                        <rect x="238" y="118" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="254" y="118" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="270" y="118" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="286" y="118" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="302" y="118" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="318" y="118" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="334" y="118" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="350" y="118" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="366" y="118" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="398" y="118" width="14" height="14" rx="2" fill="#EADDFF" />
+
+                        <!-- 周六 -->
+                        <rect x="30" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="46" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="62" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="78" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="94" y="144" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="110" y="144" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="126" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="142" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="158" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="174" y="144" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="190" y="144" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="206" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="222" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="238" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="254" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="270" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="286" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="302" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="318" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="334" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="350" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="366" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="398" y="144" width="14" height="14" rx="2" fill="#EADDFF" />
+
+                        <!-- 周日 -->
+                        <rect x="30" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="46" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="62" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="78" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="94" y="170" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="110" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="126" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="142" y="170" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="158" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="174" y="170" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="190" y="170" width="14" height="14" rx="2" fill="#D0BCFF" />
+                        <rect x="206" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="222" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="238" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="254" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="270" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="286" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="302" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="318" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="334" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="350" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="366" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+                        <rect x="398" y="170" width="14" height="14" rx="2" fill="#EADDFF" />
+
+                        <!-- 选中态：周四 10:00 -->
+                        <rect x="78" y="92" width="14" height="14" rx="2" fill="#6750A4" stroke="#21005D" stroke-width="2" />
+                    </svg>
+                </div>
+
+                <!-- 横轴标签 -->
+                <div class="flex justify-between text-[9px] text-on-surface-variant mt-3 pl-6">
+                    <span>0时</span>
+                    <span>6</span>
+                    <span>12</span>
+                    <span>18</span>
+                    <span>23时</span>
+                </div>
+
+                <!-- 图例 -->
+                <div class="flex items-center justify-between mt-4 pt-3 border-t border-outline-variant/30">
+                    <span class="text-[10px] text-on-surface-variant">少</span>
+                    <div class="flex gap-1">
+                        <div class="w-3 h-3 rounded-sm" style="background:#F3EDF7"></div>
+                        <div class="w-3 h-3 rounded-sm" style="background:#EADDFF"></div>
+                        <div class="w-3 h-3 rounded-sm" style="background:#D0BCFF"></div>
+                        <div class="w-3 h-3 rounded-sm" style="background:#B69DF8"></div>
+                        <div class="w-3 h-3 rounded-sm" style="background:#6750A4"></div>
+                    </div>
+                    <span class="text-[10px] text-on-surface-variant">多</span>
+                </div>
+            </div>
+
+            <!-- 选中详情 -->
+            <div class="bg-primary-container rounded-2xl p-4 mb-5">
+                <div class="text-[10px] text-on-primary-container/70 tracking-wider mb-1">周四 · 10:00</div>
+                <div class="text-base text-on-primary-container font-medium">本周最常出现在这个时段</div>
+                <div class="text-xs text-on-primary-container/70 mt-1">过去 7 天有 4 次专注从这个时段开始</div>
+            </div>
+
+            <!-- AI 洞察 -->
+            <div class="bg-surface-container rounded-2xl p-4 mb-5">
+                <div class="flex items-center gap-2 mb-3">
+                    <i class="fa-solid fa-wand-magic-sparkles text-primary text-sm"></i>
+                    <span class="text-xs font-medium tracking-wider">你的专注节奏</span>
+                </div>
+                <ul class="space-y-2 text-sm text-on-surface/85 leading-relaxed">
+                    <li class="flex gap-2">
+                        <span class="text-primary">·</span>
+                        <span><strong class="text-on-surface">上午 9-12 点</strong>是你最高产的时段，周一到周四都稳定出现</span>
+                    </li>
+                    <li class="flex gap-2">
+                        <span class="text-primary">·</span>
+                        <span>下午 14-16 点是第二个高峰，建议安排<strong class="text-on-surface">次重要任务</strong></span>
+                    </li>
+                    <li class="flex gap-2">
+                        <span class="text-primary">·</span>
+                        <span>晚上 20 点后几乎不专注，符合健康的作息</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- NavigationBar -->
+        <div class="absolute bottom-0 left-0 right-0 bg-surface-container border-t border-outline-variant/30">
+            <div class="flex items-stretch h-20 px-3">
+                <button onclick="window.location.href='focus.html'" class="flex-1 flex flex-col items-center justify-center gap-1 state-layer">
+                    <i class="fa-solid fa-droplet text-on-surface-variant text-lg"></i>
+                    <span class="text-[11px] text-on-surface-variant">专注</span>
+                </button>
+                <button onclick="window.location.href='history.html'" class="flex-1 flex flex-col items-center justify-center gap-1 state-layer">
+                    <div class="px-5 py-1 rounded-full bg-primary-container">
+                        <i class="fa-solid fa-clock text-primary text-lg"></i>
+                    </div>
+                    <span class="text-[11px] font-medium text-on-surface">记录</span>
+                </button>
+                <button class="flex-1 flex flex-col items-center justify-center gap-1 state-layer">
+                    <i class="fa-regular fa-user text-on-surface-variant text-lg"></i>
+                    <span class="text-[11px] text-on-surface-variant">我的</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

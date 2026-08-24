@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Launcher background: white card behind the purple ribbon (matches the icon design) -->
+    <color name="ic_launcher_background">#FFFFFF</color>
+    <color name="splash_background">#FEF7FF</color>
+</resources>

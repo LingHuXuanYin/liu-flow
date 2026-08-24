@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>休息 · 流 Flow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&family=Roboto+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', 'Noto Sans SC', sans-serif; background: #FEF7FF; }
+        .mono { font-family: 'Roboto Mono', monospace; }
+        @keyframes breath {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        .breath-circle { animation: breath 5s ease-in-out infinite; }
+    </style>
+</head>
+<body class="overflow-hidden">
+
+    <div class="w-full h-screen bg-surface text-on-surface flex flex-col">
+
+        <!-- 状态栏 -->
+        <div class="flex items-center justify-between px-6 pt-3 pb-1 text-xs">
+            <span class="mono font-medium">9:41</span>
+            <div class="flex items-center gap-1.5">
+                <i class="fa-solid fa-signal text-[10px]"></i>
+                <i class="fa-solid fa-wifi text-[10px]"></i>
+                <i class="fa-solid fa-battery-full text-[12px]"></i>
+            </div>
+        </div>
+
+        <!-- 顶部 -->
+        <div class="px-6 pt-4 pb-2 flex items-center justify-between">
+            <div>
+                <div class="text-[10px] tracking-[0.3em] text-on-surface-variant mb-1">REST TIME</div>
+                <h1 class="text-2xl font-normal">休息一下</h1>
+            </div>
+            <button class="text-sm text-primary font-medium px-2 py-1 state-layer rounded-lg">跳过</button>
+        </div>
+
+        <!-- 主体 -->
+        <div class="flex-1 flex flex-col items-center justify-center px-6 relative">
+
+            <!-- 呼吸圆 -->
+            <div class="relative breath-circle">
+                <div class="w-64 h-64 rounded-full bg-gradient-to-br from-primary-container to-secondary-container flex items-center justify-center relative overflow-hidden">
+                    <div class="absolute inset-4 rounded-full bg-gradient-to-tr from-primary/10 to-transparent"></div>
+                    <div class="relative text-center">
+                        <i class="fa-solid fa-leaf text-3xl text-primary mb-2"></i>
+                        <div class="mono text-4xl font-light text-on-primary-container">04:32</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 提示语 -->
+            <div class="text-center mt-12 max-w-xs">
+                <p class="text-base text-on-surface leading-relaxed">
+                    站起来走一走<br>看 5 米外的绿植<br>让眼睛休息一下
+                </p>
+            </div>
+        </div>
+
+        <!-- 底部 -->
+        <div class="px-6 pb-10">
+            <div class="bg-surface-container rounded-2xl p-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-tertiary/20 flex items-center justify-center">
+                    <i class="fa-solid fa-check text-tertiary"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="text-sm font-medium">已完成一次专注</div>
+                    <div class="text-xs text-on-surface-variant mt-0.5">写作 · 25 分钟</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
