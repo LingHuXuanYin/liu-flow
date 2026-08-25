@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,8 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -44,6 +41,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.liuflow.app.R
 import com.liuflow.app.data.model.Category
@@ -122,7 +120,7 @@ fun FocusScreen(
                 ) {
                     RingCenter(
                         statusLabel = stringResource(R.string.focus_label_status),
-                        timeText = TimeFormat.mmss(duration * 60),
+                        timeText = TimeFormat.mmss((duration * 60f).roundToInt()),
                         hint = stringResource(R.string.focus_label_hint),
                     )
                 }
@@ -202,24 +200,26 @@ private fun TaskInput(value: String, onChange: (String) -> Unit) {
 @Composable
 private fun CategoryRow(selected: Category?, onSelect: (Category?) -> Unit) {
     val colors = LocalFlowColors.current
-    Column(modifier = Modifier.fillMaxWidth()) {
+    val all = Category.entries
+    val half = (all.size + 1) / 2  // 6 -> 3
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
             text = stringResource(R.string.focus_label_category),
             color = colors.onSurfaceVariant,
             style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 2.sp),
-            modifier = Modifier.padding(start = 4.dp, bottom = 8.dp),
+            modifier = Modifier.padding(start = 4.dp, bottom = 4.dp),
         )
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 0.dp),
-        ) {
-            items(Category.entries) { c ->
-                CategoryChip(
-                    label = stringResource(c.labelRes),
-                    icon = c.icon,
-                    active = selected == c,
-                    onClick = { onSelect(if (selected == c) null else c) },
-                )
+        all.chunked(half).forEach { rowItems ->
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                rowItems.forEach { c ->
+                    CategoryChip(
+                        label = stringResource(c.labelRes),
+                        icon = c.icon,
+                        active = selected == c,
+                        onClick = { onSelect(if (selected == c) null else c) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
         }
     }
@@ -231,13 +231,14 @@ private fun CategoryChip(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     active: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val colors = LocalFlowColors.current
     val bg = if (active) colors.primaryContainer else colors.surface
     val fg = if (active) colors.onPrimaryContainer else colors.onSurfaceVariant
     val border = if (active) colors.primary else colors.outlineVariant
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .background(bg)
             .border(1.dp, border, RoundedCornerShape(12.dp))
@@ -256,11 +257,11 @@ private fun CategoryChip(
 
 @Composable
 private fun DurationRow(
-    selected: Int,
+    selected: Float,
     onCustomClick: () -> Unit,
 ) {
     val colors = LocalFlowColors.current
-    val options = listOf(15, 25, 45, 60)
+    val options = listOf(15f, 25f, 45f, 60f)
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.focus_label_duration),
@@ -296,7 +297,7 @@ private fun DurationRow(
                 }
             }
             // 自定义 chip - shows current value when not in standard set
-            val isCustomSelected = selected !in options
+            val isCustomSelected = options.none { it == selected }
             val bg = if (isCustomSelected) colors.primaryContainer else colors.surface
             val fg = if (isCustomSelected) colors.onPrimaryContainer else colors.onSurfaceVariant
             Box(
@@ -310,7 +311,11 @@ private fun DurationRow(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = if (isCustomSelected) "${selected}m" else stringResource(R.string.focus_duration_custom),
+                    text = when {
+                        !isCustomSelected -> stringResource(R.string.focus_duration_custom)
+                        selected < 1f -> "${(selected * 60f).roundToInt()}s"
+                        else -> "${selected.toInt()}m"
+                    },
                     color = fg,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -322,19 +327,19 @@ private fun DurationRow(
 
 @Composable
 private fun CustomDurationDialog(
-    initial: Int,
-    onConfirm: (Int) -> Unit,
+    initial: Float,
+    onConfirm: (Float) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val colors = LocalFlowColors.current
-    var value by remember { mutableFloatStateOf(initial.toFloat().coerceIn(5f, 90f)) }
+    var value by remember { mutableFloatStateOf(initial.coerceIn(0.5f, 90f)) }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.focus_custom_title)) },
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = stringResource(R.string.focus_custom_label, value.toInt()),
+                    text = if (value < 1f) "${(value * 60f).roundToInt()}s" else stringResource(R.string.focus_custom_label, value.toInt()),
                     color = colors.onSurface,
                     style = MaterialTheme.typography.displaySmall.copy(
                         fontFamily = FontFamily.Monospace,
@@ -345,17 +350,17 @@ private fun CustomDurationDialog(
                 Slider(
                     value = value,
                     onValueChange = { value = it },
-                    valueRange = 5f..90f,
-                    steps = 84,  // 1-minute steps between 5 and 90
+                    valueRange = 0.5f..90f,
+                    steps = 178,  // 0.5-minute (30s) steps between 0.5 and 90
                 )
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(stringResource(R.string.focus_custom_range_min), color = colors.onSurfaceVariant, style = MaterialTheme.typography.labelSmall)
-                    Text(stringResource(R.string.focus_custom_range_max), color = colors.onSurfaceVariant, style = MaterialTheme.typography.labelSmall)
+                    Text("30s", color = colors.onSurfaceVariant, style = MaterialTheme.typography.labelSmall)
+                    Text("90m", color = colors.onSurfaceVariant, style = MaterialTheme.typography.labelSmall)
                 }
             }
         },
         confirmButton = {
-            TextButton(onClick = { onConfirm(value.toInt()) }) {
+            TextButton(onClick = { onConfirm(value) }) {
                 Text(stringResource(R.string.action_confirm))
             }
         },

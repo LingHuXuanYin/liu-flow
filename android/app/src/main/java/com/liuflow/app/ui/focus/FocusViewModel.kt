@@ -8,6 +8,7 @@ import com.liuflow.app.data.repository.FlowRepository
 import com.liuflow.app.data.prefs.SettingsRepository
 import com.liuflow.app.timer.TimerController
 import com.liuflow.app.util.DateUtils
+import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -31,8 +32,8 @@ class FocusViewModel(
     private val _category = MutableStateFlow<Category?>(null)
     val category: StateFlow<Category?> = _category.asStateFlow()
 
-    private val _duration = MutableStateFlow(25)
-    val duration: StateFlow<Int> = _duration.asStateFlow()
+    private val _duration = MutableStateFlow(25f)
+    val duration: StateFlow<Float> = _duration.asStateFlow()
 
     val timerState = timer.state
     val settingsState: StateFlow<UserSettings> = settings.settings
@@ -40,10 +41,11 @@ class FocusViewModel(
 
     fun setTask(value: String) { _taskInput.value = value }
     fun setCategory(value: Category?) { _category.value = value }
-    fun setDuration(minutes: Int) { _duration.value = minutes.coerceIn(5, 90) }
+    fun setDuration(minutes: Float) { _duration.value = minutes.coerceIn(0.5f, 90f) }
 
     fun prepareAndStart(onStart: () -> Unit) {
-        timer.prepareFocus(_taskInput.value, _category.value, _duration.value)
+        val seconds = (_duration.value * 60f).roundToInt().coerceAtLeast(30)
+        timer.prepareFocusSeconds(_taskInput.value, _category.value, seconds)
         timer.startFocus()
         onStart()
     }

@@ -62,6 +62,18 @@ class TimerController(
         )
     }
 
+    fun prepareFocusSeconds(task: String, category: Category?, seconds: Int) {
+        cancelTick()
+        _state.value = State(
+            phase = Phase.IDLE,
+            mode = Mode.FOCUS,
+            totalSeconds = seconds.coerceAtLeast(30),
+            remainingSeconds = seconds.coerceAtLeast(30),
+            task = task,
+            category = category,
+        )
+    }
+
     fun startFocus() {
         val s = _state.value
         if (s.phase != Phase.IDLE && s.phase != Phase.PAUSED) return
