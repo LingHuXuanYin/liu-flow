@@ -52,11 +52,22 @@
     <string name="rest_subtitle">站起来走走吧</string>
     <string name="rest_again">再来一次</string>
     <string name="rest_finish">结束</string>
+    <string name="rest_skip">跳过</string>
+    <string name="rest_label_focus">REST TIME</string>
+    <string name="rest_hint_lines">站起来走一走\n看 5 米外的绿植\n让眼睛休息一下</string>
+    <string name="rest_summary_title">已完成一次专注</string>
 
     <!-- History -->
     <string name="history_title">记录</string>
     <string name="history_today_section">今日</string>
-    <string name="history_weekly_section">本周专注</string>
+    <string name="history_weekly_section">本周</string>
+    <string name="history_week_summary">%1$d 次 · %2$s</string>
+    <string name="history_see_all">查看全部</string>
+    <string name="history_recent_done">最近完成</string>
+    <string name="history_trend_count">%1$d%%</string>
+    <string name="history_relative_just_now">刚刚</string>
+    <string name="history_relative_today">今天</string>
+    <string name="history_relative_yesterday">昨天</string>
     <string name="history_recent_section">最近专注</string>
     <string name="history_today_count">%1$d 次</string>
     <string name="history_today_minutes">%1$d 分钟</string>

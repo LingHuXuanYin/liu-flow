@@ -143,6 +143,7 @@ fun FocusScreen(
 
                 DurationRow(
                     selected = duration,
+                    onPresetSelect = viewModel::setDuration,
                     onCustomClick = { showCustomDialog = true },
                 )
             }
@@ -258,10 +259,11 @@ private fun CategoryChip(
 @Composable
 private fun DurationRow(
     selected: Float,
+    onPresetSelect: (Float) -> Unit,
     onCustomClick: () -> Unit,
 ) {
     val colors = LocalFlowColors.current
-    val options = listOf(15f, 25f, 45f, 60f)
+    val options = listOf(15f, 25f, 40f, 60f)
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.focus_label_duration),
@@ -285,7 +287,7 @@ private fun DurationRow(
                         .clip(RoundedCornerShape(12.dp))
                         .background(bg)
                         .border(1.dp, border, RoundedCornerShape(12.dp))
-                        .clickable { onCustomClick() },
+                        .clickable { onPresetSelect(v) },
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(

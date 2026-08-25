@@ -70,6 +70,17 @@ object StatsCalculator {
         }
     }
 
+    /**
+     * Like [last7Days] but with an arbitrary window. The returned list is
+     * ordered [today, today-1, ..., today-(days-1)] — used to compute
+     * "this week vs same window last week" comparisons.
+     */
+    fun lastNDays(
+        sessions: List<SessionEntity>,
+        days: Int,
+        today: LocalDate = LocalDate.now().minusDays(7),
+    ): List<DailyCount> = last7Days(sessions, today).take(days)
+
     fun last30Days(sessions: List<SessionEntity>, today: LocalDate = LocalDate.now()): List<DailyCount> {
         val dates = DateUtils.lastNDates(30, today)
         val grouped = sessions.filter { it.status == "completed" }.groupBy { it.date }
