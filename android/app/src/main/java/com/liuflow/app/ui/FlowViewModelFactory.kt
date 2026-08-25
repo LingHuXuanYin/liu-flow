@@ -17,12 +17,12 @@ import com.liuflow.app.ui.weekly.WeeklyViewModel
 
 /** Single factory exposing all ViewModels with their [AppContainer] dependencies. */
 fun flowViewModelFactory(container: AppContainer) = viewModelFactory {
-    initializer { FocusViewModel(container.settingsRepository, container.flowRepository, container.timer) }
+    initializer { FocusViewModel(container.settingsRepository, container.flowRepository, container.timer, container.sessionStateMachine) }
     initializer { HistoryViewModel(container.flowRepository) }
     initializer { StatsViewModel(container.flowRepository, container.settingsRepository) }
     initializer { HeatmapViewModel(container.flowRepository) }
     initializer { WeeklyViewModel(container.flowRepository) }
     initializer { MeViewModel(container.flowRepository, container.settingsRepository) }
     initializer { SettingsViewModel(container.settingsRepository) }
-    initializer { RunningViewModel(container.timer, container.flowRepository, container.settingsRepository) }
+    initializer { RunningViewModel(container.timer, container.flowRepository, container.settingsRepository, container.sessionStateMachine) }
 }

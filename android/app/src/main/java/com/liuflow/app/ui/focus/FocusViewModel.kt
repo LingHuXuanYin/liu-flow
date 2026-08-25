@@ -7,6 +7,7 @@ import com.liuflow.app.data.prefs.UserSettings
 import com.liuflow.app.data.repository.FlowRepository
 import com.liuflow.app.data.prefs.SettingsRepository
 import com.liuflow.app.timer.TimerController
+import com.liuflow.app.ui.session.SessionStateMachine
 import com.liuflow.app.util.DateUtils
 import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +25,7 @@ class FocusViewModel(
     private val settings: SettingsRepository,
     private val repo: FlowRepository,
     private val timer: TimerController,
+    private val stateMachine: SessionStateMachine,
 ) : ViewModel() {
 
     private val _taskInput = MutableStateFlow("")
@@ -45,8 +47,7 @@ class FocusViewModel(
 
     fun prepareAndStart(onStart: () -> Unit) {
         val seconds = (_duration.value * 60f).roundToInt().coerceAtLeast(30)
-        timer.prepareFocusSeconds(_taskInput.value, _category.value, seconds)
-        timer.startFocus()
+        stateMachine.startFocus(_taskInput.value, _category.value, seconds)
         onStart()
     }
 }

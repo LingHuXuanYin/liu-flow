@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +39,14 @@ fun RestScreen(
     onFinish: () -> Unit,
 ) {
     val colors = LocalFlowColors.current
+    // Natural rest completion: when phase hits RESTING and the timer
+    // drained to 00:00, fire the same exit path as the user pressing
+    // the finish button. State machine: rest -> start.
+    LaunchedEffect(timerState.phase, timerState.remainingSeconds) {
+        if (timerState.phase == TimerController.Phase.RESTING && timerState.remainingSeconds == 0) {
+            onFinish()
+        }
+    }
     Surface(color = colors.background, modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
             Column(

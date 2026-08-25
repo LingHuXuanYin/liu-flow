@@ -125,9 +125,17 @@ class TimerController(
         launchTick()
     }
 
+    /**
+     * Leave rest mode but keep the displayed countdown frozen.
+     *  - cancels the 1s tick so the number stops moving
+     *  - sets phase=IDLE so the Rest screen / Running screen render correctly
+     *  - keeps [State.totalSeconds] / [State.remainingSeconds] / [State.task] /
+     *    [State.category] so a downstream "back to Focus" jump doesn't show
+     *    00:00 / no-task on the source screen for a frame.
+     */
     fun finishRest() {
         cancelTick()
-        _state.value = State()
+        _state.update { it.copy(phase = Phase.IDLE) }
     }
 
     private fun launchTick() {

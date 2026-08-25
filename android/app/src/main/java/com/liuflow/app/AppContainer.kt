@@ -6,6 +6,7 @@ import com.liuflow.app.data.db.AppDatabase
 import com.liuflow.app.data.prefs.SettingsRepository
 import com.liuflow.app.data.repository.FlowRepository
 import com.liuflow.app.timer.TimerController
+import com.liuflow.app.ui.session.SessionStateMachine
 import com.liuflow.app.timer.TimerServiceController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,12 @@ class AppContainer(appContext: Context) {
     val flowRepository = FlowRepository(db.sessionDao(), db.dailyGoalDao())
 
     val timer = TimerController(appScope)
+
+    /** Session state machine — encapsulates the 4 transitions of the
+     *  start/running/rest state graph and the timer pause / resume /
+     *  restart helpers. View models call into this and never touch
+     *  [TimerController] directly. */
+    val sessionStateMachine = SessionStateMachine(timer)
 
     /**
      * Wires the foreground service to the timer; instantiated eagerly so
