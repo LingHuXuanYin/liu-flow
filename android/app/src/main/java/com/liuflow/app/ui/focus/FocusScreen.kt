@@ -22,7 +22,9 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.NotificationsNone
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -67,6 +69,7 @@ fun FocusScreen(
     val dateLine = "${DateUtils.formatWeekdayShort(java.time.LocalDate.now())} · ${DateUtils.formatDate(System.currentTimeMillis())}"
 
     Surface(color = colors.background, modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
             // TopAppBar Medium-style header
             Row(
@@ -160,6 +163,25 @@ fun FocusScreen(
             },
             onDismiss = { showCustomDialog = false },
         )
+    }
+
+    // Extended FAB — explicit start entry. Sits above the BottomNavBar (80dp)
+    // and the system nav bar so it's never obscured.
+    ExtendedFloatingActionButton(
+        onClick = { viewModel.prepareAndStart(onStart) },
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(end = 24.dp, bottom = 96.dp),
+        containerColor = colors.primary,
+        contentColor = colors.onPrimary,
+    ) {
+        Icon(Icons.Filled.PlayArrow, contentDescription = null)
+        Spacer(Modifier.size(8.dp))
+        Text(
+            text = stringResource(R.string.action_start),
+            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
+        )
+    }
     }
 }
 

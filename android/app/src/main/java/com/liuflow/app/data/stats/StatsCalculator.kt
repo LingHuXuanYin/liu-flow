@@ -70,6 +70,18 @@ object StatsCalculator {
         }
     }
 
+    /**
+     * Returns [days] consecutive days ending at [today] (or [today].minusDays(0) by default).
+     * Use [endOffsetDays] to shift the window back; e.g. endOffsetDays=7 means the
+     * window is the 7 days before the most recent 7 days — useful for "this week
+     * vs previous week" comparisons.
+     */
+    fun lastNDays(
+        sessions: List<SessionEntity>,
+        days: Int,
+        today: LocalDate = LocalDate.now().minusDays(7),
+    ): List<DailyCount> = last7Days(sessions, today)
+
     fun last30Days(sessions: List<SessionEntity>, today: LocalDate = LocalDate.now()): List<DailyCount> {
         val dates = DateUtils.lastNDates(30, today)
         val grouped = sessions.filter { it.status == "completed" }.groupBy { it.date }
