@@ -151,6 +151,20 @@ fun FocusScreen(
                     onCustomClick = { showCustomDialog = true },
                 )
             }
+        }
+    }
+
+    if (showCustomDialog) {
+        CustomDurationDialog(
+            initial = duration,
+            onConfirm = { newValue ->
+                viewModel.setDuration(newValue)
+                showCustomDialog = false
+            },
+            onDismiss = { showCustomDialog = false },
+        )
+    }
+
     // Extended FAB — explicit start entry. Sits above the BottomNavBar (80dp)
     // and the system nav bar so it's never obscured.
     ExtendedFloatingActionButton(
@@ -168,20 +182,6 @@ fun FocusScreen(
             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
         )
     }
-        }
-    }
-
-    if (showCustomDialog) {
-        CustomDurationDialog(
-            initial = duration,
-            onConfirm = { newValue ->
-                viewModel.setDuration(newValue)
-                showCustomDialog = false
-            },
-            onDismiss = { showCustomDialog = false },
-        )
-    }
-
     }
 }
 
