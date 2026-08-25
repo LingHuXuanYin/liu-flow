@@ -271,6 +271,36 @@
                             </div>
                         </div>
 
+                        <div onclick="showPage('splash')" data-page="splash" class="nav-card p-4 rounded-xl border border-white/10 bg-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="nav-num w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-medium">10</div>
+                                <div>
+                                    <div class="text-sm font-medium">启动屏 <span class="text-[10px] text-primary ml-1">v0.2.0</span></div>
+                                    <div class="text-xs text-gray-500">Splash · 1.5s 动效</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div onclick="showPage('login')" data-page="login" class="nav-card p-4 rounded-xl border border-white/10 bg-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="nav-num w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-medium">11</div>
+                                <div>
+                                    <div class="text-sm font-medium">登录 <span class="text-[10px] text-primary ml-1">v0.2.0</span></div>
+                                    <div class="text-xs text-gray-500">Login · 手机号+验证码</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div onclick="showPage('migrate')" data-page="migrate" class="nav-card p-4 rounded-xl border border-white/10 bg-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="nav-num w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-medium">12</div>
+                                <div>
+                                    <div class="text-sm font-medium">数据迁移 <span class="text-[10px] text-primary ml-1">v0.2.0</span></div>
+                                    <div class="text-xs text-gray-500">Migrate · V0.1.0 升级</div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <div class="mt-8 pt-6 border-t border-white/10">
@@ -341,9 +371,12 @@
             weekly: { title: '周报', desc: '7 天专注报告。本周 vs 上周对比 + 分类分布。', features: ['本周 vs 上周', '分类环形', 'AI 总结'] },
             me: { title: '我的', desc: '个人主页 + 数据卡 + 设置入口。', features: ['用户卡', '数据卡', '入口列表'] },
             settings: { title: '设置', desc: '4 套主题色 + 时长 + 提醒 + 数据导出 + 清空。', features: ['主题色切换', '时长调整', '数据导出'] },
+            splash: { title: '启动屏', desc: 'V0.2.0 新增。1.5s 圆环呼吸 + logo 淡入，引导用户进入登录页。', features: ['圆环 SVG 1.5s 动画', '主题色光晕背景', '「流」字 + F L O W 副标'] },
+            login: { title: '登录', desc: 'V0.2.0 新增。手机号 + 6 位短信验证码，强制登录换取云端同步。', features: ['+86 前缀手机号输入', '6 位验证码独立方框', '60s 倒计时持久化', '服务协议模态弹窗'] },
+            migrate: { title: '数据迁移', desc: 'V0.2.0 新增。V0.1.0 升级用户首次启动时提示，自动把本地数据上传到云端。', features: ['检测 localStorage', '28 条记录 / 12 天 / 14.2h 预览', '立即登录迁移 / 稍后再说'] },
         };
 
-        const order = ['focus', 'running', 'rest', 'history', 'stats', 'heatmap', 'weekly', 'me', 'settings'];
+        const order = ['focus', 'running', 'rest', 'history', 'stats', 'heatmap', 'weekly', 'me', 'settings', 'splash', 'login', 'migrate'];
         let currentIdx = 0;
 
         function showPage(page) {

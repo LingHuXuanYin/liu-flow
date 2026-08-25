@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>流 Flow · V0.2.0 登录原型</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+
+body { background: #0a0a0a; color: #fafafa; }
+header {
+  text-align: center;
+  padding: 40px 24px 24px;
+}
+header h1 {
+  font-size: 32px;
+  font-weight: 400;
+  color: #fafafa;
+  margin-bottom: 8px;
+  letter-spacing: 4px;
+}
+header .sub {
+  font-size: 13px;
+  color: #888;
+  letter-spacing: 4px;
+  font-weight: 300;
+}
+.theme-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+}
+.theme-tab {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  background: rgba(255,255,255,0.05);
+  color: #aaa;
+  cursor: pointer;
+  transition: all 200ms;
+  border: 1px solid transparent;
+}
+.theme-tab.active {
+  background: rgba(122, 78, 124, 0.2);
+  color: #fafafa;
+  border-color: #7A4E7C;
+}
+.theme-tab:hover { background: rgba(255,255,255,0.1); }
+
+.page-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 16px 24px;
+  flex-wrap: wrap;
+}
+.page-tab {
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 11px;
+  background: rgba(255,255,255,0.05);
+  color: #aaa;
+  cursor: pointer;
+  transition: all 200ms;
+  border: none;
+  font-family: inherit;
+}
+.page-tab.active {
+  background: rgba(255,255,255,0.95);
+  color: #0a0a0a;
+}
+
+.showcase {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 0 40px;
+  min-height: 1000px;
+}
+.showcase iframe {
+  width: 412px;
+  height: 892px;
+  border: none;
+  border-radius: 48px;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,0.05),
+    0 0 0 6px #2a2a2a,
+    0 30px 80px -20px rgba(0,0,0,0.6);
+  background: transparent;
+}
+
+footer {
+  text-align: center;
+  padding: 40px 24px;
+  color: #666;
+  font-size: 12px;
+}
+footer a { color: #999; text-decoration: none; }
+
+</style>
+</head>
+<body>
+<header>
+  <h1>流 Flow</h1>
+  <div class="sub">V 0 . 2 . 0 &nbsp; · &nbsp; 登录原型</div>
+</header>
+
+<div class="theme-tabs">
+  <div class="theme-tab active" data-theme="twilight">薄暮</div>
+  <div class="theme-tab" data-theme="classic">经典</div>
+  <div class="theme-tab" data-theme="midnight">静夜</div>
+  <div class="theme-tab" data-theme="forest">森林</div>
+</div>
+
+<div class="page-tabs">
+  <button class="page-tab active" data-page="splash.html">启动屏</button>
+  <button class="page-tab" data-page="login.html">登录</button>
+  <button class="page-tab" data-page="migrate.html">数据迁移</button>
+</div>
+
+<div class="showcase">
+  <iframe id="preview" src="splash.html"></iframe>
+</div>
+
+<footer>
+  <div>本原型为 V0.2.0 PRD 设计稿 · 配套 <a href="../docs/prd_v0.2.0.md">PRD v0.2.0</a></div>
+  <div style="margin-top: 8px;">后端：腾讯云 SMS + 腾讯云 CloudBase</div>
+</footer>
+
+<script>
+  // 主题切换
+  const themeTabs = document.querySelectorAll('.theme-tab');
+  const pageTabs = document.querySelectorAll('.page-tab');
+  const preview = document.getElementById('preview');
+  let currentTheme = 'twilight';
+  let currentPage = 'splash.html';
+
+  function updatePreview() {
+    const sep = preview.src.includes('?') ? '&' : '?';
+    preview.src = currentPage + sep + 'theme=' + currentTheme;
+  }
+
+  themeTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      themeTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentTheme = tab.dataset.theme;
+      updatePreview();
+    });
+  });
+
+  pageTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      pageTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentPage = tab.dataset.page;
+      updatePreview();
+    });
+  });
+
+  // 从 URL hash 读取初始页面
+  const hash = window.location.hash.replace('#', '');
+  if (hash) {
+    const target = document.querySelector('[data-page="' + hash + '"]');
+    if (target) target.click();
+  }
+</script>
+</body>
+</html>

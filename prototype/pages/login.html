@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 · 流 Flow</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #7A4E7C;
+  --primary-lifted: #8E5E91;
+  --on-primary: #FFFFFF;
+  --primary-container: #E8C5E5;
+  --on-primary-container: #2A0E2C;
+  --secondary-container: #F0EBF0;
+  --tertiary: #D89BAE;
+  --surface: #F0EBF0;
+  --surface-variant: #E0D5E0;
+  --surface-container: #F8F4F8;
+  --on-surface: #2A1A2A;
+  --on-surface-variant: #6B5B6B;
+  --outline: #A89AA8;
+  --outline-variant: #D5C8D5;
+  --ring-glow: rgba(122, 78, 124, 0.18);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  font-family: 'Roboto', 'Noto Sans SC', system-ui, sans-serif;
+  background: #0a0a0a;
+  color: var(--on-surface);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+.mono { font-family: 'Roboto Mono', 'SF Mono', monospace; }
+
+/* Pixel 8/9 外框 */
+.android-frame {
+  width: 412px;
+  height: 892px;
+  background: #1a1a1a;
+  border-radius: 48px;
+  padding: 8px;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,0.05),
+    0 0 0 6px #2a2a2a,
+    0 30px 80px -20px rgba(0,0,0,0.6),
+    0 50px 100px -20px var(--ring-glow);
+  position: relative;
+}
+.android-screen {
+  width: 100%; height: 100%;
+  background: var(--surface);
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+}
+.punch-hole {
+  position: absolute;
+  top: 8px; left: 50%;
+  transform: translateX(-50%);
+  width: 14px; height: 14px;
+  background: #000;
+  border-radius: 50%;
+  z-index: 50;
+}
+
+/* 状态栏 24dp */
+.status-bar {
+  height: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--on-surface);
+}
+.status-bar .icons { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+
+/* 底部 3-button 导航条 */
+.nav-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 56px;
+  background: var(--surface);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid var(--outline-variant);
+}
+.nav-bar .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--on-surface-variant);
+}
+.nav-bar .nav-item .icon {
+  font-size: 20px;
+}
+
+body {
+  background: #0a0a0a;
+}
+.login-screen {
+  width: 100%; height: 100%;
+  background: var(--surface);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-top: 56px;
+  padding-bottom: 80px;
+  padding-left: 0;
+  padding-right: 0;
+  animation: screenFadeIn 600ms ease-out;
+}
+@keyframes screenFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* logo 区（带光晕） */
+.logo-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 32px;
+  margin-bottom: 40px;
+  position: relative;
+}
+.logo-ring {
+  width: 96px;
+  height: 96px;
+  position: relative;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 32px var(--ring-glow));
+}
+.logo-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.logo-ring .bg { fill: none; stroke: var(--outline-variant); stroke-width: 3; }
+.logo-ring .fg {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 263.89;
+  animation: ringBreath 2.4s ease-in-out infinite;
+}
+@keyframes ringBreath {
+  0%, 100% { stroke-dashoffset: 263.89; }
+  50% { stroke-dashoffset: 131.95; }
+}
+.logo-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle, var(--ring-glow) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+}
+.logo-area > * { position: relative; z-index: 1; }
+
+.brand-text-lg {
+  font-family: 'Noto Sans SC', serif;
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--on-surface);
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+.brand-text-en {
+  font-size: 11px;
+  color: var(--on-surface-variant);
+  letter-spacing: 6px;
+  font-weight: 300;
+}
+
+/* 标题与副标题 */
+.title-block {
+  padding: 0 32px;
+  margin-bottom: 32px;
+  text-align: left;
+}
+.title-block .h1 {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--on-surface);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.title-block .h2 {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--on-surface-variant);
+  line-height: 1.5;
+}
+
+/* Step 1：手机号输入 */
+.step { display: none; flex-direction: column; flex: 1; padding: 0 24px; }
+.step.active { display: flex; }
+
+.phone-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1.5px solid var(--outline-variant);
+  padding: 14px 0;
+  margin-bottom: 32px;
+  transition: border-color 200ms;
+}
+.phone-row:focus-within { border-bottom-color: var(--primary); }
+.phone-prefix {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--on-surface);
+  padding-right: 12px;
+  border-right: 1px solid var(--outline-variant);
+}
+.phone-input {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 400;
+  font-family: 'Roboto Mono', monospace;
+  color: var(--on-surface);
+  background: transparent;
+  border: none;
+  outline: none;
+  letter-spacing: 1.5px;
+}
+.phone-input::placeholder { color: var(--on-surface-variant); font-weight: 300; letter-spacing: 0.5px; font-family: 'Roboto', sans-serif; }
+
+/* 主按钮 */
+.btn-primary {
+  width: 100%;
+  height: 52px;
+  border-radius: 26px;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms;
+  box-shadow: 0 2px 8px -2px var(--ring-glow);
+}
+.btn-primary:hover { background: var(--primary-lifted); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { background: var(--outline-variant); cursor: not-allowed; box-shadow: none; }
+
+.btn-primary.lifted {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+
+/* Step 2：验证码 */
+.code-target {
+  font-size: 14px;
+  color: var(--on-surface-variant);
+  margin-bottom: 24px;
+  text-align: center;
+}
+.code-target .num {
+  font-family: 'Roboto Mono', monospace;
+  color: var(--on-surface);
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+.code-target .edit {
+  color: var(--primary);
+  font-size: 12px;
+  margin-left: 8px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.code-boxes {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+.code-box {
+  width: 48px;
+  height: 56px;
+  border: 1.5px solid var(--outline-variant);
+  border-radius: 10px;
+  background: transparent;
+  font-size: 22px;
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 500;
+  text-align: center;
+  color: var(--on-surface);
+  outline: none;
+  transition: all 150ms;
+}
+.code-box:focus {
+  border-color: var(--primary);
+  border-width: 2px;
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+.code-box.error {
+  border-color: #BA1A1A;
+  animation: shake 0.4s;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+.resend-row {
+  text-align: center;
+  font-size: 13px;
+  color: var(--on-surface-variant);
+  margin-bottom: 32px;
+}
+.resend-row .timer {
+  font-family: 'Roboto Mono', monospace;
+  color: var(--on-surface-variant);
+}
+.resend-row .resend {
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* 协议 */
+.agreement {
+  margin-top: auto;
+  padding: 16px 32px 0;
+  text-align: center;
+  font-size: 11px;
+  color: var(--on-surface-variant);
+  line-height: 1.6;
+}
+.agreement a {
+  color: var(--on-surface-variant);
+  text-decoration: underline;
+}
+
+/* 协议模态弹窗 */
+.modal {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  z-index: 100;
+  align-items: flex-end;
+  animation: modalFade 200ms;
+}
+@keyframes modalFade { from { opacity: 0; } to { opacity: 1; } }
+.modal.active { display: flex; }
+.sheet {
+  width: 100%;
+  background: var(--surface);
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  max-height: 70%;
+  display: flex;
+  flex-direction: column;
+  animation: sheetUp 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.sheet-handle {
+  width: 32px;
+  height: 4px;
+  background: var(--outline-variant);
+  border-radius: 2px;
+  margin: 12px auto 0;
+}
+.sheet-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--on-surface);
+  padding: 16px 24px 8px;
+}
+.sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 24px 24px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--on-surface-variant);
+}
+.sheet-body h3 { color: var(--on-surface); font-size: 14px; font-weight: 500; margin: 16px 0 8px; }
+.sheet-body p { margin-bottom: 12px; }
+.sheet-body ul { padding-left: 20px; margin-bottom: 12px; }
+.sheet-body li { margin-bottom: 6px; }
+
+</style>
+</head>
+<body>
+
+<body>
+  <div style="display:flex;justify-content:center;align-items:center;min-height:100vh;padding:32px 0;">
+    <div class="android-frame">
+      <div class="android-screen">
+        <div class="punch-hole"></div>
+
+  <div class="status-bar">
+    <div>2:48</div>
+    <div class="icons">
+      <i class="fa-solid fa-signal"></i>
+      <i class="fa-solid fa-wifi"></i>
+      <i class="fa-solid fa-battery-three-quarters"></i>
+    </div>
+  </div>
+
+        <div class="login-screen">
+          <!-- logo 区（带主题色光晕 + 圆环呼吸动效） -->
+          <div class="logo-area">
+            <div class="logo-glow"></div>
+            <div class="logo-ring">
+              <svg viewBox="0 0 100 100">
+                <circle class="bg" cx="50" cy="50" r="42"></circle>
+                <circle class="fg" cx="50" cy="50" r="42"></circle>
+              </svg>
+            </div>
+            <div class="brand-text-lg">流 Flow</div>
+            <div class="brand-text-en">F O C U S &nbsp;·&nbsp; F L O W</div>
+          </div>
+
+          <!-- Step 1：手机号输入 -->
+          <div class="step active" id="step-1">
+            <div class="title-block">
+              <div class="h1">欢迎回到 流 Flow</div>
+              <div class="h2">登录后数据云端同步，多端互通</div>
+            </div>
+            <div style="padding: 0 24px;">
+              <div class="phone-row">
+                <span class="phone-prefix">+86</span>
+                <input class="phone-input" type="tel" maxlength="11" placeholder="请输入手机号" value="138 0000 0000" />
+              </div>
+              <button class="btn-primary" onclick="goStep(2)">获取验证码</button>
+            </div>
+          </div>
+
+          <!-- Step 2：验证码输入 -->
+          <div class="step" id="step-2">
+            <div class="title-block">
+              <div class="h1">输入验证码</div>
+              <div class="h2">已发送 6 位数字验证码</div>
+            </div>
+            <div class="code-target">
+              验证码已发送至 <span class="num">138 **** 0000</span>
+              <span class="edit" onclick="goStep(1)">修改</span>
+            </div>
+            <div style="padding: 0 16px;">
+              <div class="code-boxes">
+                <input class="code-box" type="tel" maxlength="1" value="1" />
+                <input class="code-box" type="tel" maxlength="1" value="2" />
+                <input class="code-box" type="tel" maxlength="1" value="3" />
+                <input class="code-box" type="tel" maxlength="1" value="4" />
+                <input class="code-box" type="tel" maxlength="1" value="" />
+                <input class="code-box" type="tel" maxlength="1" value="" />
+              </div>
+              <div class="resend-row">
+                <span class="timer"><span class="mono">59</span>s 后重新发送</span>
+              </div>
+              <button class="btn-primary">登录</button>
+            </div>
+          </div>
+
+          <!-- 协议 -->
+          <div class="agreement">
+            登录即代表同意<a href="#" onclick="showAgreement(); return false;">《服务协议》</a>
+            <a href="#" onclick="showAgreement(); return false;">《隐私政策》</a>
+          </div>
+        </div>
+
+        <!-- 协议模态弹窗 -->
+        <div class="modal" id="agreement-modal">
+          <div class="sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-title">服务协议与隐私政策</div>
+            <div class="sheet-body">
+              <h3>一、服务说明</h3>
+              <p>流 Flow（以下简称"本服务"）是一款极简的深度工作计时器，由个人开发者运营。本服务通过手机号短信验证码完成身份验证，所有专注记录可选择同步至云端。</p>
+              <h3>二、我们收集的信息</h3>
+              <ul>
+                <li>手机号：用于登录身份验证</li>
+                <li>专注记录：包括任务名、时长、分类、时间戳</li>
+                <li>个人偏好：包括主题色、默认时长、声音设置</li>
+              </ul>
+              <h3>三、信息使用</h3>
+              <p>上述信息仅用于为您提供专注记录与多端同步服务，不会用于广告投放、用户画像或转售给第三方。</p>
+              <h3>四、您的权利</h3>
+              <ul>
+                <li>随时退出登录，本地与云端数据保留</li>
+                <li>随时导出数据为 JSON / CSV 文件</li>
+                <li>随时切换账号或修改个人偏好</li>
+              </ul>
+              <h3>五、短信服务</h3>
+              <p>本服务使用腾讯云短信服务下发验证码，可能产生 0.045 元/条的费用，由开发者承担，不向用户收费。</p>
+              <p style="margin-top:24px; font-size: 11px; color: var(--on-surface-variant);">最后更新：2026-08-25</p>
+            </div>
+          </div>
+        </div>
+
+  <div class="nav-bar">
+    <div class="nav-item">
+      <div class="icon"><i class="fa-solid fa-droplet"></i></div>
+      <div>专注</div>
+    </div>
+    <div class="nav-item">
+      <div class="icon"><i class="fa-regular fa-clock"></i></div>
+      <div>记录</div>
+    </div>
+    <div class="nav-item">
+      <div class="icon"><i class="fa-regular fa-user"></i></div>
+      <div>我的</div>
+    </div>
+  </div>
+
+      </div>
+    </div>
+  </div>
+  <script>
+    function goStep(n) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step-' + n).classList.add('active');
+    }
+    function showAgreement() {
+      document.getElementById('agreement-modal').classList.add('active');
+    }
+    document.getElementById('agreement-modal').addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('active');
+    });
+
+    // 验证码自动跳格
+    document.querySelectorAll('.code-box').forEach((box, i, boxes) => {
+      box.addEventListener('input', function(e) {
+        if (e.target.value && i < boxes.length - 1) boxes[i + 1].focus();
+      });
+      box.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && !e.target.value && i > 0) boxes[i - 1].focus();
+      });
+    });
+  </script>
+</body>
+</html>

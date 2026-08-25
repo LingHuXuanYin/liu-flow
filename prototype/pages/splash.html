@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>流 Flow · 启动</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #7A4E7C;
+  --primary-lifted: #8E5E91;
+  --on-primary: #FFFFFF;
+  --primary-container: #E8C5E5;
+  --on-primary-container: #2A0E2C;
+  --secondary-container: #F0EBF0;
+  --tertiary: #D89BAE;
+  --surface: #F0EBF0;
+  --surface-variant: #E0D5E0;
+  --surface-container: #F8F4F8;
+  --on-surface: #2A1A2A;
+  --on-surface-variant: #6B5B6B;
+  --outline: #A89AA8;
+  --outline-variant: #D5C8D5;
+  --ring-glow: rgba(122, 78, 124, 0.18);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  font-family: 'Roboto', 'Noto Sans SC', system-ui, sans-serif;
+  background: #0a0a0a;
+  color: var(--on-surface);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+.mono { font-family: 'Roboto Mono', 'SF Mono', monospace; }
+
+/* Pixel 8/9 外框 */
+.android-frame {
+  width: 412px;
+  height: 892px;
+  background: #1a1a1a;
+  border-radius: 48px;
+  padding: 8px;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,0.05),
+    0 0 0 6px #2a2a2a,
+    0 30px 80px -20px rgba(0,0,0,0.6),
+    0 50px 100px -20px var(--ring-glow);
+  position: relative;
+}
+.android-screen {
+  width: 100%; height: 100%;
+  background: var(--surface);
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+}
+.punch-hole {
+  position: absolute;
+  top: 8px; left: 50%;
+  transform: translateX(-50%);
+  width: 14px; height: 14px;
+  background: #000;
+  border-radius: 50%;
+  z-index: 50;
+}
+
+/* 状态栏 24dp */
+.status-bar {
+  height: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--on-surface);
+}
+.status-bar .icons { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+
+/* 底部 3-button 导航条 */
+.nav-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 56px;
+  background: var(--surface);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid var(--outline-variant);
+}
+.nav-bar .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--on-surface-variant);
+}
+.nav-bar .nav-item .icon {
+  font-size: 20px;
+}
+
+.splash-screen {
+  width: 100%; height: 100%;
+  background: linear-gradient(180deg, var(--surface) 0%, var(--secondary-container) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: fadeIn 800ms ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.ring-container {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  margin-bottom: 48px;
+}
+.ring-container svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  filter: drop-shadow(0 0 32px var(--ring-glow));
+}
+.ring-bg {
+  fill: none;
+  stroke: var(--outline-variant);
+  stroke-width: 4;
+}
+.ring-progress {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 565.48;
+  stroke-dashoffset: 565.48;
+  animation: ringSweep 1500ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes ringSweep {
+  0% { stroke-dashoffset: 565.48; }
+  100% { stroke-dashoffset: 0; }
+}
+.brand-text {
+  font-family: 'Noto Sans SC', serif;
+  font-size: 64px;
+  font-weight: 300;
+  color: var(--on-surface);
+  letter-spacing: 8px;
+  margin-bottom: 12px;
+  animation: brandFade 800ms 200ms ease-out both;
+}
+@keyframes brandFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.brand-sub {
+  font-size: 13px;
+  color: var(--on-surface-variant);
+  letter-spacing: 4px;
+  font-weight: 300;
+  animation: brandFade 800ms 400ms ease-out both;
+}
+.bg-glow {
+  position: absolute;
+  top: 30%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, var(--ring-glow) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+}
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+</style>
+</head>
+<body>
+
+<body>
+  <div style="display:flex;justify-content:center;align-items:center;min-height:100vh;padding:32px 0;">
+    <div class="android-frame">
+      <div class="android-screen">
+        <div class="punch-hole"></div>
+        
+  <div class="status-bar">
+    <div>2:47</div>
+    <div class="icons">
+      <i class="fa-solid fa-signal"></i>
+      <i class="fa-solid fa-wifi"></i>
+      <i class="fa-solid fa-battery-three-quarters"></i>
+    </div>
+  </div>
+
+        <div class="splash-screen">
+          <div class="bg-glow"></div>
+          <div class="content">
+            <div class="ring-container">
+              <svg viewBox="0 0 200 200">
+                <circle class="ring-bg" cx="100" cy="100" r="90"></circle>
+                <circle class="ring-progress" cx="100" cy="100" r="90"></circle>
+              </svg>
+            </div>
+            <div class="brand-text">流</div>
+            <div class="brand-sub">F L O W</div>
+          </div>
+        </div>
+        
+  <div class="nav-bar">
+    <div class="nav-item">
+      <div class="icon"><i class="fa-solid fa-droplet"></i></div>
+      <div>专注</div>
+    </div>
+    <div class="nav-item">
+      <div class="icon"><i class="fa-regular fa-clock"></i></div>
+      <div>记录</div>
+    </div>
+    <div class="nav-item">
+      <div class="icon"><i class="fa-regular fa-user"></i></div>
+      <div>我的</div>
+    </div>
+  </div>
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>
