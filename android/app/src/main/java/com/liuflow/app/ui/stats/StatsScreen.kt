@@ -23,8 +23,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.LocalFireDepartment
-import androidx.compose.material.icons.filled.TrendingDown
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -36,10 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -69,8 +65,8 @@ fun StatsScreen(
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 24.dp, vertical = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                item { OverviewGrid(s) }
-                item { StreakGradientCard(s.streak) }
+                item { OverviewCard(s.overview) }
+                item { StreakCard(s.streak) }
                 item { DailyGoalCard(s.todayCount, s.dailyTarget) }
                 item { WeekBarCard(s.weekBars) }
                 item { CategoryBarsCard(s.categories7d) }
@@ -103,74 +99,30 @@ private fun TopBar(onBack: () -> Unit) {
             style = MaterialTheme.typography.titleLarge,
         )
         Spacer(Modifier.weight(1f))
+        // Symmetric spacer; the heatmap now has its own card entry below.
         Spacer(Modifier.size(40.dp))
     }
 }
 
-/** 2x2 KPI grid with "↑ X% vs 上周" trend underneath each. */
 @Composable
-private fun OverviewGrid(s: StatsUiState) {
+private fun OverviewCard(o: StatsCalculator.Overview) {
     val colors = LocalFlowColors.current
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        KpiBox(
-            modifier = Modifier.weight(1f),
-            label = "本周次数",
-            value = s.weekBars.sumOf { it.count }.toString(),
-            trend = s.weekCountTrend,
-        )
-        KpiBox(
-            modifier = Modifier.weight(1f),
-            label = "本周时长",
-            value = TimeFormat.friendlyMinutes(s.weekBars.sumOf { it.minutes }),
-            trend = s.weekMinutesTrend,
-        )
-    }
-    Spacer(Modifier.height(12.dp))
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        KpiBox(
-            modifier = Modifier.weight(1f),
-            label = "连续天数",
-            value = s.streak.current.toString(),
-            sublabel = "最佳 ${s.streak.best} 天",
-            trend = null,
-        )
-        KpiBox(
-            modifier = Modifier.weight(1f),
-            label = "完成率",
-            value = "${(s.overview.completionRate * 100).toInt()}%",
-            sublabel = "放弃 ${s.overview.totalCount.let { _ -> s.overview.let { o -> (o.totalCount - (o.totalCount * o.completionRate).toInt()) } }} 次",
-            trend = null,
-        )
+    Card {
+        Text(stringResource(R.string.stats_overview), color = colors.onSurface, style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(12.dp))
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Kpi(o.totalCount.toString(), R.string.stats_kpi_count)
+            Kpi(TimeFormat.friendlyMinutes(o.totalMinutes), R.string.stats_kpi_minutes)
+            Kpi(o.totalDays.toString(), R.string.stats_kpi_days)
+            Kpi("${(o.completionRate * 100).toInt()}%", R.string.stats_kpi_completion)
+        }
     }
 }
 
 @Composable
-private fun KpiBox(
-    modifier: Modifier,
-    label: String,
-    value: String,
-    sublabel: String? = null,
-    trend: Float?,
-) {
+private fun Kpi(value: String, labelRes: Int) {
     val colors = LocalFlowColors.current
-    Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(colors.surfaceContainer)
-            .padding(16.dp),
-    ) {
-        Text(
-            text = label,
-            color = colors.onSurfaceVariant,
-            style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.sp),
-        )
-        Spacer(Modifier.height(8.dp))
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = value,
             color = colors.onSurface,
@@ -179,100 +131,117 @@ private fun KpiBox(
                 fontWeight = FontWeight.Light,
             ),
         )
-        Spacer(Modifier.height(4.dp))
-        if (trend != null && trend != 0f) {
-            TrendChip(trend = trend)
-        } else if (sublabel != null) {
+        Text(
+            text = stringResource(labelRes),
+            color = colors.onSurfaceVariant,
+            style = MaterialTheme.typography.labelSmall,
+        )
+    }
+}
+
+@Composable
+private fun StreakCard(streak: StatsCalculator.Streak) {
+    val colors = LocalFlowColors.current
+    Card {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Filled.LocalFireDepartment, contentDescription = null, tint = colors.error)
+            Spacer(Modifier.size(8.dp))
             Text(
-                text = sublabel,
+                text = stringResource(R.string.stats_streak_days, streak.current),
+                color = colors.onSurface,
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(Modifier.weight(1f))
+            Text(
+                text = stringResource(R.string.stats_streak_best, streak.best),
                 color = colors.onSurfaceVariant,
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.bodySmall,
             )
         }
     }
 }
 
 @Composable
-private fun TrendChip(trend: Float) {
+private fun WeekBarCard(week: List<StatsCalculator.DailyCount>) {
     val colors = LocalFlowColors.current
-    val up = trend > 0
-    val color = if (up) colors.primary else colors.error
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            imageVector = if (up) Icons.Filled.TrendingUp else Icons.Filled.TrendingDown,
-            contentDescription = null,
-            tint = color,
-            modifier = Modifier.size(12.dp),
-        )
-        Spacer(Modifier.width(2.dp))
-        Text(
-            text = "${(kotlin.math.abs(trend) * 100).toInt()}% vs 上周",
-            color = color,
-            style = MaterialTheme.typography.labelSmall,
-        )
+    val maxCount = (week.maxOfOrNull { it.count } ?: 0).coerceAtLeast(1)
+    Card {
+        Text(stringResource(R.string.stats_weekly_chart_title), color = colors.onSurface, style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(12.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth().height(120.dp),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            week.forEach { d ->
+                val ratio = d.count.toFloat() / maxCount
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .height((ratio * 80).dp.coerceAtLeast(4.dp))
+                            .size(width = 14.dp, height = (ratio * 80).dp.coerceAtLeast(4.dp))
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (d.count == 0) colors.outlineVariant else colors.primary),
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = DateUtils.formatWeekdayShort(d.date).takeLast(1),
+                        color = colors.onSurfaceVariant,
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                }
+            }
+        }
     }
 }
 
-/** Gradient streak card with fire icon, current streak, best, and a monthly goal bar. */
 @Composable
-private fun StreakGradientCard(streak: StatsCalculator.Streak) {
+private fun CategoryBarsCard(cats: List<StatsCalculator.CategoryBreakdown>) {
     val colors = LocalFlowColors.current
-    val monthGoal = 20
-    val monthProgress = (streak.current.toFloat() / monthGoal).coerceIn(0f, 1f)
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(colors.primary, colors.primary.copy(alpha = 0.7f)),
-                ),
-            )
-            .padding(20.dp),
-    ) {
-        // Decorative circle
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .size(80.dp)
-                .background(Color.White.copy(alpha = 0.08f), CircleShape),
-        )
-        Column {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Filled.LocalFireDepartment,
-                    contentDescription = null,
-                    tint = Color(0xFFFFB74D), // soft orange flame
-                    modifier = Modifier.size(28.dp),
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = "连续 ${streak.current} 天",
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-            }
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = "距离本月目标 $monthGoal 天还差 ${(monthGoal - streak.current).coerceAtLeast(0)} 天，继续保持！",
-                color = Color.White.copy(alpha = 0.75f),
-                style = MaterialTheme.typography.bodySmall,
-            )
-            Spacer(Modifier.height(12.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(3.dp))
-                    .background(Color.White.copy(alpha = 0.2f)),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(monthProgress)
-                        .height(6.dp)
-                        .clip(RoundedCornerShape(3.dp))
-                        .background(Color.White),
-                )
+    Card {
+        Text(stringResource(R.string.stats_category_7d_title), color = colors.onSurface, style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(12.dp))
+        if (cats.isEmpty()) {
+            Text("近 7 天还没有分类数据", color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
+        } else {
+            cats.forEach { c ->
+                Spacer(Modifier.height(10.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier.size(8.dp).clip(CircleShape).background(c.category.accent),
+                    )
+                    Spacer(Modifier.size(8.dp))
+                    Text(
+                        text = stringResource(c.category.labelRes),
+                        color = colors.onSurface,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.width(64.dp),
+                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(colors.surfaceContainerHigh),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(c.ratio.coerceIn(0f, 1f))
+                                .height(8.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(c.category.accent),
+                        )
+                    }
+                    Spacer(Modifier.size(8.dp))
+                    Text(
+                        text = "${(c.ratio * 100).toInt()}%",
+                        color = colors.onSurfaceVariant,
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
             }
         }
     }
@@ -341,118 +310,6 @@ private fun DailyGoalCard(today: Int, target: Int) {
 }
 
 @Composable
-private fun WeekBarCard(week: List<StatsCalculator.DailyCount>) {
-    val colors = LocalFlowColors.current
-    val maxCount = (week.maxOfOrNull { it.count } ?: 0).coerceAtLeast(1)
-    Card {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(R.string.stats_weekly_chart_title),
-                color = colors.onSurface,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.weight(1f),
-            )
-        }
-        Spacer(Modifier.height(12.dp))
-        Box(modifier = Modifier.fillMaxWidth().height(120.dp)) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                listOf(size.height, size.height / 2f, 0f).forEach { y ->
-                    drawLine(
-                        color = colors.outlineVariant.copy(alpha = 0.4f),
-                        start = Offset(0f, y),
-                        end = Offset(size.width, y),
-                        strokeWidth = 1f,
-                        pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(4f, 6f)),
-                    )
-                }
-            }
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                week.forEachIndexed { idx, d ->
-                    val ratio = d.count.toFloat() / maxCount
-                    val isToday = idx == week.lastIndex
-                    val barColor = when {
-                        d.count == 0 -> colors.outlineVariant.copy(alpha = 0.3f)
-                        isToday -> colors.primary
-                        else -> colors.primaryContainer
-                    }
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .height((ratio * 80).dp.coerceAtLeast(4.dp))
-                                .size(width = 14.dp, height = (ratio * 80).dp.coerceAtLeast(4.dp))
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(barColor),
-                        )
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            text = DateUtils.formatWeekdayShort(d.date).takeLast(1),
-                            color = if (isToday) colors.primary else colors.onSurfaceVariant,
-                            style = MaterialTheme.typography.labelSmall,
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun CategoryBarsCard(cats: List<StatsCalculator.CategoryBreakdown>) {
-    val colors = LocalFlowColors.current
-    Card {
-        Text(stringResource(R.string.stats_category_7d_title), color = colors.onSurface, style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.height(12.dp))
-        if (cats.isEmpty()) {
-            Text("近 7 天还没有分类数据", color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
-        } else {
-            cats.forEach { c ->
-                Spacer(Modifier.height(10.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier.size(8.dp).clip(CircleShape).background(c.category.accent),
-                    )
-                    Spacer(Modifier.size(8.dp))
-                    Text(
-                        text = stringResource(c.category.labelRes),
-                        color = colors.onSurface,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.width(64.dp),
-                    )
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(8.dp)
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(colors.surfaceContainerHigh),
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth(c.ratio.coerceIn(0f, 1f))
-                                .height(8.dp)
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(c.category.accent),
-                        )
-                    }
-                    Spacer(Modifier.size(8.dp))
-                    Text(
-                        text = "${(c.ratio * 100).toInt()}%",
-                        color = colors.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun MiniHeatmapCard(grid: Array<IntArray>, max: Int, onOpen: () -> Unit) {
     val colors = LocalFlowColors.current
     Card {
@@ -479,6 +336,7 @@ private fun MiniHeatmapCard(grid: Array<IntArray>, max: Int, onOpen: () -> Unit)
             Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = colors.onSurfaceVariant)
         }
         Spacer(Modifier.height(12.dp))
+        // Mini 7×24 grid: cell 10dp + 1dp gap; total ≈ 73×263 dp
         Column {
             for (w in 0 until 7) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

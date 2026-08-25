@@ -39,8 +39,6 @@
 
     <!-- Running -->
     <string name="running_label_focus">专注</string>
-    <string name="running_focusing">正在专注</string>
-    <string name="running_fullscreen_hint">全屏专注模式 · 屏蔽通知</string>
     <string name="running_paused_title">已暂停</string>
     <string name="running_paused_resume">继续</string>
     <string name="running_paused_abandon">放弃</string>
@@ -54,10 +52,6 @@
     <string name="rest_subtitle">站起来走走吧</string>
     <string name="rest_again">再来一次</string>
     <string name="rest_finish">结束</string>
-    <string name="rest_skip">跳过</string>
-    <string name="rest_label_focus">REST TIME</string>
-    <string name="rest_hint_lines">站起来走一走\n看 5 米外的绿植\n让眼睛休息一下</string>
-    <string name="rest_summary_title">已完成一次专注</string>
 
     <!-- History -->
     <string name="history_title">记录</string>
