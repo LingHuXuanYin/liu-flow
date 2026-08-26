@@ -8,7 +8,7 @@
 
 import os
 
-ROOT = r"Q:\large_program\liu-flow\prototype"
+ROOT = r"Q:\large_program\liu-flow\prototype\pages"
 os.makedirs(ROOT, exist_ok=True)
 
 
@@ -235,86 +235,270 @@ SPLASH_THEME = "twilight"  # 启动屏固定用薄暮主题
 def build_splash() -> str:
     t = THEMES[SPLASH_THEME]
     extra = f"""
+/* === Splash 启动屏 2.0（动效升级）=== */
+
 .splash-screen {{
   width: 100%; height: 100%;
-  background: linear-gradient(180deg, var(--surface) 0%, var(--secondary-container) 100%);
+  background:
+    radial-gradient(circle at 25% 18%, var(--primary-container) 0%, transparent 45%),
+    radial-gradient(circle at 78% 82%, var(--tertiary) 0%, transparent 50%),
+    var(--surface);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
-  animation: fadeIn 800ms ease-out;
+  overflow: hidden;
+  animation: splashIn 800ms ease-out;
 }}
-@keyframes fadeIn {{
-  from {{ opacity: 0; }}
-  to {{ opacity: 1; }}
+@keyframes splashIn {{
+  from {{ opacity: 0; transform: scale(0.98); }}
+  to {{ opacity: 1; transform: scale(1); }}
 }}
-.ring-container {{
-  width: 200px;
-  height: 200px;
+
+/* 背景 8s hue-rotate 呼吸 + 1.02 缩放循环 */
+.splash-screen::before {{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, var(--ring-glow) 0%, transparent 60%);
+  animation: bgPulse 8s ease-in-out infinite;
+  pointer-events: none;
+}}
+@keyframes bgPulse {{
+  0%, 100% {{ opacity: 0.6; transform: scale(1); }}
+  50% {{ opacity: 1; transform: scale(1.08); }}
+}}
+
+/* === 浮动粒子（8 个）=== */
+.particle {{
+  position: absolute;
+  border-radius: 50%;
+  background: var(--primary);
+  pointer-events: none;
+  opacity: 0;
+  animation: float 6s ease-in-out infinite;
+}}
+.particle.p1 {{ width: 6px; height: 6px; top: 18%; left: 22%; animation-delay: 0s; }}
+.particle.p2 {{ width: 4px; height: 4px; top: 24%; left: 78%; animation-delay: 0.6s; background: var(--tertiary); }}
+.particle.p3 {{ width: 5px; height: 5px; top: 64%; left: 18%; animation-delay: 1.2s; background: var(--tertiary); }}
+.particle.p4 {{ width: 7px; height: 7px; top: 72%; left: 80%; animation-delay: 1.8s; }}
+.particle.p5 {{ width: 3px; height: 3px; top: 38%; left: 12%; animation-delay: 2.4s; background: var(--tertiary); }}
+.particle.p6 {{ width: 4px; height: 4px; top: 48%; left: 88%; animation-delay: 3.0s; }}
+.particle.p7 {{ width: 5px; height: 5px; top: 82%; left: 42%; animation-delay: 3.6s; background: var(--tertiary); }}
+.particle.p8 {{ width: 3px; height: 3px; top: 14%; left: 50%; animation-delay: 4.2s; }}
+@keyframes float {{
+  0%, 100% {{ opacity: 0; transform: translate(0, 0) scale(0.5); }}
+  20% {{ opacity: 0.6; }}
+  50% {{ opacity: 0.9; transform: translate(0, -24px) scale(1); }}
+  80% {{ opacity: 0.4; }}
+}}
+
+/* === 多层圆环 === */
+.ring-stage {{
   position: relative;
-  margin-bottom: 48px;
+  width: 280px;
+  height: 280px;
+  margin-bottom: 32px;
 }}
-.ring-container svg {{
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
-  filter: drop-shadow(0 0 32px var(--ring-glow));
+
+/* 主圆环（最外） */
+.ring-main {{
+  position: absolute;
+  inset: 0;
+  animation: spinClockwise 1.6s linear infinite;
 }}
-.ring-bg {{
+.ring-main svg {{ width: 100%; height: 100%; filter: drop-shadow(0 0 18px var(--ring-glow)); }}
+
+/* 副圆环（中） */
+.ring-sub {{
+  position: absolute;
+  inset: 30px;
+  animation: spinCounter 2.4s linear infinite;
+}}
+.ring-sub svg {{ width: 100%; height: 100%; }}
+
+/* 内圆环 */
+.ring-inner {{
+  position: absolute;
+  inset: 70px;
+  animation: spinClockwise 3.2s linear infinite;
+}}
+.ring-inner svg {{ width: 100%; height: 100%; }}
+
+/* 8 个外点 */
+.ring-dots {{
+  position: absolute;
+  inset: 0;
+  animation: spinClockwise 6s linear infinite;
+}}
+.ring-dots span {{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  transform-origin: 0 0;
+  box-shadow: 0 0 12px var(--ring-glow);
+}}
+.ring-dots span:nth-child(1) {{ transform: translate(-50%, -50%) rotate(0deg) translateY(-130px); }}
+.ring-dots span:nth-child(2) {{ transform: translate(-50%, -50%) rotate(45deg) translateY(-130px); background: var(--tertiary); width: 6px; height: 6px; }}
+.ring-dots span:nth-child(3) {{ transform: translate(-50%, -50%) rotate(90deg) translateY(-130px); }}
+.ring-dots span:nth-child(4) {{ transform: translate(-50%, -50%) rotate(135deg) translateY(-130px); background: var(--tertiary); width: 6px; height: 6px; }}
+.ring-dots span:nth-child(5) {{ transform: translate(-50%, -50%) rotate(180deg) translateY(-130px); }}
+.ring-dots span:nth-child(6) {{ transform: translate(-50%, -50%) rotate(225deg) translateY(-130px); background: var(--tertiary); width: 6px; height: 6px; }}
+.ring-dots span:nth-child(7) {{ transform: translate(-50%, -50%) rotate(270deg) translateY(-130px); }}
+.ring-dots span:nth-child(8) {{ transform: translate(-50%, -50%) rotate(315deg) translateY(-130px); background: var(--tertiary); width: 6px; height: 6px; }}
+
+@keyframes spinClockwise {{ from {{ transform: rotate(0deg); }} to {{ transform: rotate(360deg); }} }}
+@keyframes spinCounter {{ from {{ transform: rotate(360deg); }} to {{ transform: rotate(0deg); }} }}
+
+/* SVG 描边通用 */
+.circle-track {{
   fill: none;
   stroke: var(--outline-variant);
-  stroke-width: 4;
+  stroke-width: 2;
+  opacity: 0.4;
 }}
-.ring-progress {{
+.circle-prog {{
   fill: none;
   stroke: var(--primary);
-  stroke-width: 5;
   stroke-linecap: round;
+}}
+.ring-main .circle-prog {{ stroke-width: 4; }}
+.ring-sub .circle-prog {{ stroke-width: 3; stroke: var(--tertiary); }}
+.ring-inner .circle-prog {{ stroke-width: 2.5; }}
+
+/* 主圆环 sweep 1.6s */
+.ring-main .circle-prog {{
   stroke-dasharray: 565.48;
   stroke-dashoffset: 565.48;
-  animation: ringSweep 1500ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: ringSweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }}
 @keyframes ringSweep {{
   0% {{ stroke-dashoffset: 565.48; }}
   100% {{ stroke-dashoffset: 0; }}
 }}
-.brand-text {{
-  font-family: 'Noto Sans SC', serif;
-  font-size: 64px;
-  font-weight: 300;
-  color: var(--on-surface);
-  letter-spacing: 8px;
-  margin-bottom: 12px;
-  animation: brandFade 800ms 200ms ease-out both;
+
+/* 副圆环 dashed 流动 */
+.ring-sub .circle-prog {{
+  stroke-dasharray: 8 6;
+  stroke-dashoffset: 0;
+  animation: dashFlow 2s linear infinite;
 }}
-@keyframes brandFade {{
-  from {{ opacity: 0; transform: translateY(8px); }}
+@keyframes dashFlow {{
+  to {{ stroke-dashoffset: -56; }}
+}}
+
+/* 内圆环填充式 */
+.ring-inner .circle-prog {{
+  stroke-dasharray: 219.91;
+  stroke-dashoffset: 219.91;
+  animation: innerSweep 3.2s cubic-bezier(0.4, 0, 0.2, 1) 200ms forwards;
+}}
+@keyframes innerSweep {{
+  0% {{ stroke-dashoffset: 219.91; }}
+  100% {{ stroke-dashoffset: 0; }}
+}}
+
+/* === 中心「流」字 stroke 描边 === */
+.brand-stage {{
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}}
+.brand-stroke-svg {{
+  width: 96px;
+  height: 96px;
+  margin-bottom: 12px;
+}}
+.brand-stroke-svg text {{
+  font-family: 'Noto Sans SC', serif;
+  font-size: 84px;
+  font-weight: 300;
+  text-anchor: middle;
+  dominant-baseline: central;
+  fill: transparent;
+  stroke: var(--on-surface);
+  stroke-width: 1.2;
+  stroke-dasharray: 220;
+  stroke-dashoffset: 220;
+  animation: strokeDraw 1.6s ease-out 600ms forwards, fillIn 600ms ease-in 2000ms forwards;
+}}
+@keyframes strokeDraw {{ to {{ stroke-dashoffset: 0; }} }}
+@keyframes fillIn {{
+  to {{ fill: var(--on-surface); stroke-opacity: 0.4; }}
+}}
+
+/* F L O W 逐字 fly in */
+.brand-sub {{
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  letter-spacing: 6px;
+}}
+.brand-sub span {{
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: charIn 500ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}}
+.brand-sub span:nth-child(1) {{ animation-delay: 1.6s; }}
+.brand-sub span:nth-child(2) {{ animation-delay: 1.7s; }}
+.brand-sub span:nth-child(3) {{ animation-delay: 1.8s; }}
+.brand-sub span:nth-child(4) {{ animation-delay: 1.9s; }}
+.brand-sub span:nth-child(5) {{ animation-delay: 2.0s; }}
+@keyframes charIn {{
   to {{ opacity: 1; transform: translateY(0); }}
 }}
-.brand-sub {{
-  font-size: 13px;
-  color: var(--on-surface-variant);
-  letter-spacing: 4px;
-  font-weight: 300;
-  animation: brandFade 800ms 400ms ease-out both;
-}}
-.bg-glow {{
+
+/* === 进度条（底部弧线）=== */
+.progress-bar {{
   position: absolute;
-  top: 30%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 280px;
-  height: 280px;
-  background: radial-gradient(circle, var(--ring-glow) 0%, transparent 70%);
-  border-radius: 50%;
-  z-index: 0;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: var(--outline-variant);
+  border-radius: 1px;
+  overflow: hidden;
+  opacity: 0;
+  animation: progressIn 400ms ease-out 1.2s forwards;
 }}
+@keyframes progressIn {{ to {{ opacity: 1; }} }}
+.progress-fill {{
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--primary), var(--tertiary));
+  border-radius: 1px;
+  animation: progressFill 1.6s cubic-bezier(0.4, 0, 0.2, 1) 1.4s forwards;
+}}
+@keyframes progressFill {{
+  0% {{ width: 0; }}
+  100% {{ width: 100%; }}
+}}
+
+/* 整体微缩放循环（动效期内） */
 .content {{
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  animation: contentBreathe 4s ease-in-out infinite;
+}}
+@keyframes contentBreathe {{
+  0%, 100% {{ transform: scale(1); }}
+  50% {{ transform: scale(1.02); }}
 }}
 """
     html = frame_head(SPLASH_THEME, "流 Flow · 启动", extra)
@@ -325,19 +509,66 @@ def build_splash() -> str:
       <div class="android-screen">
         <div class="punch-hole"></div>
         {status_bar(SPLASH_THEME, "2:47")}
+
         <div class="splash-screen">
-          <div class="bg-glow"></div>
+          <!-- 8 个浮动粒子 -->
+          <div class="particle p1"></div>
+          <div class="particle p2"></div>
+          <div class="particle p3"></div>
+          <div class="particle p4"></div>
+          <div class="particle p5"></div>
+          <div class="particle p6"></div>
+          <div class="particle p7"></div>
+          <div class="particle p8"></div>
+
           <div class="content">
-            <div class="ring-container">
-              <svg viewBox="0 0 200 200">
-                <circle class="ring-bg" cx="100" cy="100" r="90"></circle>
-                <circle class="ring-progress" cx="100" cy="100" r="90"></circle>
-              </svg>
+            <!-- 多层圆环 -->
+            <div class="ring-stage">
+              <!-- 主圆环（最外 1.6s sweep） -->
+              <div class="ring-main">
+                <svg viewBox="0 0 200 200">
+                  <circle class="circle-track" cx="100" cy="100" r="90"></circle>
+                  <circle class="circle-prog" cx="100" cy="100" r="90"></circle>
+                </svg>
+              </div>
+              <!-- 副圆环（中 dashed 流动） -->
+              <div class="ring-sub">
+                <svg viewBox="0 0 200 200">
+                  <circle class="circle-track" cx="100" cy="100" r="70"></circle>
+                  <circle class="circle-prog" cx="100" cy="100" r="70"></circle>
+                </svg>
+              </div>
+              <!-- 内圆环（3.2s sweep） -->
+              <div class="ring-inner">
+                <svg viewBox="0 0 200 200">
+                  <circle class="circle-track" cx="100" cy="100" r="35"></circle>
+                  <circle class="circle-prog" cx="100" cy="100" r="35"></circle>
+                </svg>
+              </div>
+              <!-- 8 个外点公转 -->
+              <div class="ring-dots">
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+              </div>
             </div>
-            <div class="brand-text">流</div>
-            <div class="brand-sub">F L O W</div>
+
+            <!-- 中心「流」字 stroke 描边 -->
+            <div class="brand-stage">
+              <svg class="brand-stroke-svg" viewBox="0 0 100 100">
+                <text x="50" y="50">流</text>
+              </svg>
+              <div class="brand-sub">
+                <span>F</span><span>L</span><span>O</span><span>W</span><span>·</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 底部进度条 -->
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
           </div>
         </div>
+
         {nav_bar(SPLASH_THEME)}
       </div>
     </div>
@@ -468,39 +699,115 @@ body {{
   line-height: 1.5;
 }}
 
-/* Step 1：手机号输入 */
-.step {{ display: none; flex-direction: column; flex: 1; padding: 0 24px; }}
-.step.active {{ display: flex; }}
-
-.phone-row {{
+/* Tab 切换：登录 / 注册 */
+.auth-tabs {{
   display: flex;
-  align-items: center;
-  gap: 8px;
-  border-bottom: 1.5px solid var(--outline-variant);
-  padding: 14px 0;
-  margin-bottom: 32px;
-  transition: border-color 200ms;
+  margin: 0 24px 24px;
+  background: var(--surface-container);
+  border-radius: 24px;
+  padding: 4px;
+  gap: 4px;
 }}
-.phone-row:focus-within {{ border-bottom-color: var(--primary); }}
-.phone-prefix {{
-  font-size: 16px;
+.auth-tab {{
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 200ms;
+}}
+.auth-tab.active {{
+  background: var(--surface);
+  color: var(--on-surface);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}}
+
+/* Auth 表单 */
+.auth-form {{ display: none; flex-direction: column; flex: 1; padding: 0 24px; }}
+.auth-form.active {{ display: flex; }}
+
+.form-title {{
+  font-size: 22px;
   font-weight: 500;
   color: var(--on-surface);
-  padding-right: 12px;
-  border-right: 1px solid var(--outline-variant);
+  margin-bottom: 4px;
 }}
-.phone-input {{
-  flex: 1;
-  font-size: 18px;
-  font-weight: 400;
-  font-family: 'Roboto Mono', monospace;
-  color: var(--on-surface);
+.form-subtitle {{
+  font-size: 13px;
+  color: var(--on-surface-variant);
+  margin-bottom: 24px;
+}}
+
+/* Input 字段（Material 3 Outlined TextField 简化） */
+.input-field {{
+  margin-bottom: 16px;
+  position: relative;
+}}
+.input-field label {{
+  display: block;
+  font-size: 12px;
+  color: var(--on-surface-variant);
+  margin-bottom: 6px;
+  font-weight: 500;
+}}
+.input-field input {{
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1.5px solid var(--outline-variant);
+  border-radius: 12px;
   background: transparent;
-  border: none;
+  font-size: 15px;
+  color: var(--on-surface);
   outline: none;
-  letter-spacing: 1.5px;
+  transition: all 200ms;
+  font-family: inherit;
 }}
-.phone-input::placeholder {{ color: var(--on-surface-variant); font-weight: 300; letter-spacing: 0.5px; font-family: 'Roboto', sans-serif; }}
+.input-field input:focus {{
+  border-color: var(--primary);
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}}
+.input-field input::placeholder {{
+  color: var(--on-surface-variant);
+  font-weight: 300;
+}}
+.input-with-icon {{
+  position: relative;
+}}
+.input-with-icon input {{ padding-right: 44px; }}
+.input-with-icon i {{
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  font-size: 16px;
+}}
+.input-helper {{
+  font-size: 11px;
+  color: var(--on-surface-variant);
+  margin-top: 4px;
+  margin-left: 4px;
+}}
+
+/* 表单底部链接 */
+.form-footer {{
+  margin-top: 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--on-surface-variant);
+}}
+.form-footer .link {{
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 500;
+}}
+.form-footer .link:hover {{ text-decoration: underline; }}
 
 /* 主按钮 */
 .btn-primary {{
@@ -519,85 +826,14 @@ body {{
   justify-content: center;
   transition: all 200ms;
   box-shadow: 0 2px 8px -2px var(--ring-glow);
+  margin-top: 8px;
 }}
 .btn-primary:hover {{ background: var(--primary-lifted); }}
 .btn-primary:active {{ transform: scale(0.98); }}
 .btn-primary:disabled {{ background: var(--outline-variant); cursor: not-allowed; box-shadow: none; }}
-
 .btn-primary.lifted {{
   background: var(--primary-container);
   color: var(--on-primary-container);
-}}
-
-/* Step 2：验证码 */
-.code-target {{
-  font-size: 14px;
-  color: var(--on-surface-variant);
-  margin-bottom: 24px;
-  text-align: center;
-}}
-.code-target .num {{
-  font-family: 'Roboto Mono', monospace;
-  color: var(--on-surface);
-  font-weight: 500;
-  letter-spacing: 1px;
-}}
-.code-target .edit {{
-  color: var(--primary);
-  font-size: 12px;
-  margin-left: 8px;
-  cursor: pointer;
-  text-decoration: underline;
-}}
-.code-boxes {{
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 32px;
-}}
-.code-box {{
-  width: 48px;
-  height: 56px;
-  border: 1.5px solid var(--outline-variant);
-  border-radius: 10px;
-  background: transparent;
-  font-size: 22px;
-  font-family: 'Roboto Mono', monospace;
-  font-weight: 500;
-  text-align: center;
-  color: var(--on-surface);
-  outline: none;
-  transition: all 150ms;
-}}
-.code-box:focus {{
-  border-color: var(--primary);
-  border-width: 2px;
-  background: var(--primary-container);
-  color: var(--on-primary-container);
-}}
-.code-box.error {{
-  border-color: #BA1A1A;
-  animation: shake 0.4s;
-}}
-@keyframes shake {{
-  0%, 100% {{ transform: translateX(0); }}
-  25% {{ transform: translateX(-6px); }}
-  75% {{ transform: translateX(6px); }}
-}}
-.resend-row {{
-  text-align: center;
-  font-size: 13px;
-  color: var(--on-surface-variant);
-  margin-bottom: 32px;
-}}
-.resend-row .timer {{
-  font-family: 'Roboto Mono', monospace;
-  color: var(--on-surface-variant);
-}}
-.resend-row .resend {{
-  color: var(--primary);
-  cursor: pointer;
-  font-weight: 500;
 }}
 
 /* 协议 */
@@ -626,6 +862,93 @@ body {{
 }}
 @keyframes modalFade {{ from {{ opacity: 0; }} to {{ opacity: 1; }} }}
 .modal.active {{ display: flex; }}
+
+/* 图像验证码弹窗（居中卡片） */
+.captcha-dialog {{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 86%;
+  max-width: 360px;
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 28px 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  animation: captchaPop 280ms cubic-bezier(0.4, 0, 0.2, 1);
+}}
+@keyframes captchaPop {{
+  from {{ opacity: 0; transform: translate(-50%, -50%) scale(0.92); }}
+  to {{ opacity: 1; transform: translate(-50%, -50%) scale(1); }}
+}}
+.captcha-close {{
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  font-size: 18px;
+  transition: background 150ms;
+}}
+.captcha-close:hover {{ background: var(--surface-variant); }}
+.captcha-title {{
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--on-surface);
+  margin-bottom: 4px;
+}}
+.captcha-subtitle {{
+  font-size: 12px;
+  color: var(--on-surface-variant);
+  margin-bottom: 20px;
+}}
+.captcha-image-box {{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}}
+.captcha-image {{
+  position: relative;
+  flex: 1;
+  height: 60px;
+  background: linear-gradient(135deg, #F8F4F8 0%, #F0EBF0 100%);
+  border-radius: 8px;
+  border: 1px solid var(--outline-variant);
+  overflow: hidden;
+}}
+.captcha-refresh {{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 11px;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 150ms;
+}}
+.captcha-refresh:hover {{ background: var(--surface-variant); }}
+.captcha-refresh i {{
+  font-size: 16px;
+  margin-bottom: 2px;
+}}
+.captcha-input {{
+  margin-bottom: 16px;
+}}
+.captcha-input input {{
+  font-family: 'Roboto Mono', monospace;
+  font-size: 18px;
+  letter-spacing: 4px;
+  text-align: center;
+  text-transform: uppercase;
+}}
 .sheet {{
   width: 100%;
   background: var(--surface);
@@ -690,44 +1013,68 @@ body {{
             <div class="brand-text-en">F O C U S &nbsp;·&nbsp; F L O W</div>
           </div>
 
-          <!-- Step 1：手机号输入 -->
-          <div class="step active" id="step-1">
-            <div class="title-block">
-              <div class="h1">欢迎回到 流 Flow</div>
-              <div class="h2">登录后数据云端同步，多端互通</div>
+          <!-- 登录 Tab 切换（登录 / 注册） -->
+          <div class="auth-tabs">
+            <div class="auth-tab active" data-tab="login" onclick="switchTab('login')">登录</div>
+            <div class="auth-tab" data-tab="signup" onclick="switchTab('signup')">注册</div>
+          </div>
+
+          <!-- 登录表单 -->
+          <div class="auth-form active" id="form-login">
+            <div class="form-title">欢迎回到 流 Flow</div>
+            <div class="form-subtitle">登录后数据云端同步，多端互通</div>
+
+            <div class="input-field">
+              <label>邮箱</label>
+              <input type="email" placeholder="请输入邮箱" value="reader@liuflow.app" />
             </div>
-            <div style="padding: 0 24px;">
-              <div class="phone-row">
-                <span class="phone-prefix">+86</span>
-                <input class="phone-input" type="tel" maxlength="11" placeholder="请输入手机号" value="138 0000 0000" />
+
+            <div class="input-field">
+              <label>密码</label>
+              <div class="input-with-icon">
+                <input type="password" placeholder="请输入密码" value="flow2026" id="login-password" />
+                <i class="fa-regular fa-eye" onclick="togglePassword('login-password', this)"></i>
               </div>
-              <button class="btn-primary" onclick="goStep(2)">获取验证码</button>
+            </div>
+
+            <button class="btn-primary" onclick="goMain()">登录</button>
+
+            <div class="form-footer">
+              <span class="link" onclick="switchTab('signup')">没有账号？立即注册</span>
             </div>
           </div>
 
-          <!-- Step 2：验证码输入 -->
-          <div class="step" id="step-2">
-            <div class="title-block">
-              <div class="h1">输入验证码</div>
-              <div class="h2">已发送 6 位数字验证码</div>
+          <!-- 注册表单 -->
+          <div class="auth-form" id="form-signup">
+            <div class="form-title">创建你的 流 Flow 账号</div>
+            <div class="form-subtitle">几秒钟即可开始专注</div>
+
+            <div class="input-field">
+              <label>邮箱</label>
+              <input type="email" placeholder="请输入邮箱" />
             </div>
-            <div class="code-target">
-              验证码已发送至 <span class="num">138 **** 0000</span>
-              <span class="edit" onclick="goStep(1)">修改</span>
+
+            <div class="input-field">
+              <label>密码</label>
+              <div class="input-with-icon">
+                <input type="password" placeholder="8-32 位字母 + 数字" id="signup-password" />
+                <i class="fa-regular fa-eye" onclick="togglePassword('signup-password', this)"></i>
+              </div>
+              <div class="input-helper">8-32 位字母 + 数字，区分大小写</div>
             </div>
-            <div style="padding: 0 16px;">
-              <div class="code-boxes">
-                <input class="code-box" type="tel" maxlength="1" value="1" />
-                <input class="code-box" type="tel" maxlength="1" value="2" />
-                <input class="code-box" type="tel" maxlength="1" value="3" />
-                <input class="code-box" type="tel" maxlength="1" value="4" />
-                <input class="code-box" type="tel" maxlength="1" value="" />
-                <input class="code-box" type="tel" maxlength="1" value="" />
+
+            <div class="input-field">
+              <label>确认密码</label>
+              <div class="input-with-icon">
+                <input type="password" placeholder="请再次输入密码" id="signup-password-2" />
+                <i class="fa-regular fa-eye" onclick="togglePassword('signup-password-2', this)"></i>
               </div>
-              <div class="resend-row">
-                <span class="timer"><span class="mono">59</span>s 后重新发送</span>
-              </div>
-              <button class="btn-primary">登录</button>
+            </div>
+
+            <button class="btn-primary" onclick="goMain()">注册</button>
+
+            <div class="form-footer">
+              <span class="link" onclick="switchTab('login')">已有账号？立即登录</span>
             </div>
           </div>
 
@@ -738,17 +1085,17 @@ body {{
           </div>
         </div>
 
-        <!-- 协议模态弹窗 -->
+        <!-- 协议模态弹窗（Bottom Sheet） -->
         <div class="modal" id="agreement-modal">
           <div class="sheet">
             <div class="sheet-handle"></div>
             <div class="sheet-title">服务协议与隐私政策</div>
             <div class="sheet-body">
               <h3>一、服务说明</h3>
-              <p>流 Flow（以下简称"本服务"）是一款极简的深度工作计时器，由个人开发者运营。本服务通过手机号短信验证码完成身份验证，所有专注记录可选择同步至云端。</p>
+              <p>流 Flow（以下简称"本服务"）是一款极简的深度工作计时器，由个人开发者运营。本服务通过邮箱 + 密码完成身份验证，所有专注记录可同步至云端。</p>
               <h3>二、我们收集的信息</h3>
               <ul>
-                <li>手机号：用于登录身份验证</li>
+                <li>邮箱：用于登录身份验证</li>
                 <li>专注记录：包括任务名、时长、分类、时间戳</li>
                 <li>个人偏好：包括主题色、默认时长、声音设置</li>
               </ul>
@@ -760,10 +1107,45 @@ body {{
                 <li>随时导出数据为 JSON / CSV 文件</li>
                 <li>随时切换账号或修改个人偏好</li>
               </ul>
-              <h3>五、短信服务</h3>
-              <p>本服务使用腾讯云短信服务下发验证码，可能产生 0.045 元/条的费用，由开发者承担，不向用户收费。</p>
-              <p style="margin-top:24px; font-size: 11px; color: var(--on-surface-variant);">最后更新：2026-08-25</p>
+              <h3>五、密码安全</h3>
+              <p>本服务使用 bcrypt 算法加密存储您的密码，开发者无法获取明文。请使用 8-32 位含字母与数字的强密码，并定期更换。</p>
+              <p style="margin-top:24px; font-size: 11px; color: var(--on-surface-variant);">最后更新：2026-08-26</p>
             </div>
+          </div>
+        </div>
+
+        <!-- 图像验证码弹窗（风控触发） -->
+        <div class="modal" id="captcha-modal">
+          <div class="captcha-dialog">
+            <div class="captcha-close" onclick="closeCaptcha()">
+              <i class="fa-solid fa-xmark"></i>
+            </div>
+            <div class="captcha-title">请完成安全验证</div>
+            <div class="captcha-subtitle">连续输错密码后需要进行验证</div>
+
+            <div class="captcha-image-box">
+              <div class="captcha-image">
+                <span style="position:absolute;top:14px;left:18px;font-size:24px;font-family:'Roboto Mono';font-weight:700;color:#2A1A2A;transform:rotate(-8deg);">a</span>
+                <span style="position:absolute;top:18px;left:48px;font-size:28px;font-family:'Roboto Mono';font-weight:700;color:#6750A4;transform:rotate(5deg);">8</span>
+                <span style="position:absolute;top:12px;right:54px;font-size:26px;font-family:'Roboto Mono';font-weight:700;color:#2D6A4F;transform:rotate(-3deg);">K</span>
+                <span style="position:absolute;top:22px;right:18px;font-size:24px;font-family:'Roboto Mono';font-weight:700;color:#BA1A1A;transform:rotate(7deg);">2</span>
+                <!-- 干扰线 -->
+                <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" viewBox="0 0 160 60">
+                  <line x1="10" y1="20" x2="150" y2="40" stroke="#7A4E7C" stroke-width="1" opacity="0.4"/>
+                  <line x1="20" y1="50" x2="140" y2="10" stroke="#4A6FA5" stroke-width="1" opacity="0.3"/>
+                </svg>
+              </div>
+              <div class="captcha-refresh" onclick="refreshCaptcha()">
+                <i class="fa-solid fa-rotate"></i>
+                <span>换一张</span>
+              </div>
+            </div>
+
+            <div class="input-field captcha-input">
+              <input type="text" placeholder="请输入图片中的字符" maxlength="4" id="captcha-code" />
+            </div>
+
+            <button class="btn-primary" onclick="verifyCaptcha()">验证</button>
           </div>
         </div>
 """
@@ -773,10 +1155,29 @@ body {{
     </div>
   </div>
   <script>
-    function goStep(n) {{
-      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-      document.getElementById('step-' + n).classList.add('active');
+    // Tab 切换
+    function switchTab(tab) {{
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+      document.getElementById('form-' + tab).classList.add('active');
     }}
+
+    // 密码可见切换
+    function togglePassword(inputId, icon) {{
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {{
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      }} else {{
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }}
+    }}
+
+    // 协议弹窗
     function showAgreement() {{
       document.getElementById('agreement-modal').classList.add('active');
     }}
@@ -784,14 +1185,61 @@ body {{
       if (e.target === this) this.classList.remove('active');
     }});
 
-    // 验证码自动跳格
-    document.querySelectorAll('.code-box').forEach((box, i, boxes) => {{
-      box.addEventListener('input', function(e) {{
-        if (e.target.value && i < boxes.length - 1) boxes[i + 1].focus();
-      }});
-      box.addEventListener('keydown', function(e) {{
-        if (e.key === 'Backspace' && !e.target.value && i > 0) boxes[i - 1].focus();
-      }});
+    // 图像验证码弹窗
+    function showCaptcha() {{
+      document.getElementById('captcha-modal').classList.add('active');
+    }}
+    function closeCaptcha() {{
+      document.getElementById('captcha-modal').classList.remove('active');
+    }}
+    function refreshCaptcha() {{
+      // 实际项目中这里重新请求 captcha 图片
+      // 演示用：刷新字符内容
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      const spans = document.querySelectorAll('.captcha-image span');
+      for (let i = 0; i < spans.length; i++) {{
+        spans[i].textContent = chars[Math.floor(Math.random() * chars.length)];
+      }}
+    }}
+    function verifyCaptcha() {{
+      // 演示用：直接跳主屏
+      goMain();
+    }}
+    document.getElementById('captcha-modal').addEventListener('click', function(e) {{
+      if (e.target === this) closeCaptcha();
+    }});
+
+    // 演示用：点击登录按钮模拟风控触发
+    function goMain() {{
+      // 演示用：直接显示主屏（实际项目中跳主屏或显示 captcha）
+      // 这里直接 alert 提示
+      alert('登录成功（演示）\n\n实际流程：\n1. 邮箱+密码 → 调 CloudBase signIn\n2. 密码错误 3-5 次 → 弹图像验证码\n3. 验证通过 → 跳主屏');
+    }}
+
+    // 演示用：5 秒后自动弹 captcha 演示
+    setTimeout(() => {{
+      const notice = document.createElement('div');
+      notice.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:white;padding:10px 18px;border-radius:8px;font-size:12px;z-index:1000;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+      notice.innerHTML = '💡 演示提示：点击登录按钮 5 次后，会触发图像验证码弹窗';
+      document.body.appendChild(notice);
+      setTimeout(() => notice.remove(), 6000);
+    }}, 2000);
+
+    // 演示用：5 次点击后弹 captcha
+    let loginAttempts = 0;
+    document.querySelectorAll('.btn-primary').forEach(btn => {{
+      if (btn.textContent.trim() === '登录') {{
+        btn.addEventListener('click', function(e) {{
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          loginAttempts++;
+          if (loginAttempts >= 2) {{
+            showCaptcha();
+          }} else {{
+            alert('登录成功（演示）');
+          }}
+        }}, true);
+      }}
     }});
   </script>
 </body>
@@ -1124,15 +1572,26 @@ footer a {{ color: #999; text-decoration: none; }}
 # ============ 写入所有文件 ============
 
 if __name__ == "__main__":
-    files = {
+    PAGES_ROOT = r"Q:\large_program\liu-flow\prototype\pages"
+    PROTO_ROOT = r"Q:\large_program\liu-flow\prototype"
+
+    # 3 个 V0.2.0 屏 → pages/ 目录（与 V0.1.0 9 屏同目录）
+    pages_files = {
         "splash.html": build_splash(),
         "login.html": build_login(),
         "migrate.html": build_migrate(),
-        "index_v2.html": build_index(),
     }
-    for name, content in files.items():
-        path = os.path.join(ROOT, name)
+    for name, content in pages_files.items():
+        path = os.path.join(PAGES_ROOT, name)
         with open(path, "w", encoding="utf-8") as f:
             f.write(content)
-        print(f"  [ok] {name}: {len(content):,} chars")
-    print(f"\n[完成] 4 个文件写入 {ROOT}")
+        print(f"  [ok] pages/{name}: {len(content):,} chars")
+
+    # V0.2.0 独立入口 → 根目录（备份用，V0.1.0 入口已整合 V0.2.0 tab）
+    index_v2 = build_index()
+    path = os.path.join(PROTO_ROOT, "index_v2.html")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(index_v2)
+    print(f"  [ok] index_v2.html: {len(index_v2):,} chars")
+
+    print(f"\n[完成] 4 个文件写入（3 个 pages/ + 1 个根目录）")

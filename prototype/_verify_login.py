@@ -8,7 +8,14 @@ import sys
 from pathlib import Path
 
 ROOT = Path(r"Q:\large_program\liu-flow\prototype")
-FILES = ["splash.html", "login.html", "migrate.html", "index_v2.html"]
+PAGES = Path(r"Q:\large_program\liu-flow\prototype\pages")
+# V0.2.0 三屏在 pages/，独立入口在根目录
+FILES = [
+    (PAGES / "splash.html", "pages/splash.html"),
+    (PAGES / "login.html", "pages/login.html"),
+    (PAGES / "migrate.html", "pages/migrate.html"),
+    (ROOT / "index_v2.html", "index_v2.html"),
+]
 
 
 def main():
@@ -17,8 +24,7 @@ def main():
     print("=" * 60)
 
     all_ok = True
-    for name in FILES:
-        path = ROOT / name
+    for path, name in FILES:
         if not path.exists():
             print(f"  [FAIL] {name}: 文件不存在")
             all_ok = False
