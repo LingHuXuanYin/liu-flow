@@ -2,6 +2,8 @@ package com.liuflow.app
 
 import android.content.Context
 import android.util.Log
+import com.liuflow.app.auths.data.AuthManager
+import com.liuflow.app.auths.data.CloudBaseAuthApi
 import com.liuflow.app.data.db.AppDatabase
 import com.liuflow.app.data.prefs.SettingsRepository
 import com.liuflow.app.data.repository.FlowRepository
@@ -40,6 +42,18 @@ class AppContainer(appContext: Context) {
      */
     @Suppress("unused")
     val timerServiceController = TimerServiceController(appContext, timer)
+
+    // ----------------------------------------------------------------
+    // V0.2.1 auths/：完全按 docs/腾讯云开发接入指引2026.md 文档示范风格
+    //   - 一个 CloudBaseAuthApi（OkHttp + Gson 通用客户端）
+    //   - 一个 AuthManager（SharedPreferences 存 token + 业务方法）
+    //   - 删了 AuthRepository / AuthTokenStore / AuthInterceptor / 所有 DTO sealed class
+    // ----------------------------------------------------------------
+    val authApi = CloudBaseAuthApi()
+    val authManager = AuthManager(appContext, authApi).also {
+        // 启动时把本地存的 accessToken 注入 cloudbase 实例（让业务请求自动带 Authorization）
+        it.restoreAccessToken()
+    }
 
     init {
         logStorageLocations(appContext)

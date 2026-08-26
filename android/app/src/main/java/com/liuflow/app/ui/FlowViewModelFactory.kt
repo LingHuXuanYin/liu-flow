@@ -6,6 +6,8 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.liuflow.app.AppContainer
+import com.liuflow.app.auths.ui.LoginViewModel
+import com.liuflow.app.auths.ui.SignupViewModel
 import com.liuflow.app.ui.focus.FocusViewModel
 import com.liuflow.app.ui.history.HistoryViewModel
 import com.liuflow.app.ui.me.MeViewModel
@@ -22,7 +24,9 @@ fun flowViewModelFactory(container: AppContainer) = viewModelFactory {
     initializer { StatsViewModel(container.flowRepository, container.settingsRepository) }
     initializer { HeatmapViewModel(container.flowRepository) }
     initializer { WeeklyViewModel(container.flowRepository) }
-    initializer { MeViewModel(container.flowRepository, container.settingsRepository) }
+    initializer { MeViewModel(container.flowRepository, container.settingsRepository, container.authManager) }
     initializer { SettingsViewModel(container.settingsRepository) }
     initializer { RunningViewModel(container.timer, container.flowRepository, container.settingsRepository, container.sessionStateMachine) }
+    initializer { LoginViewModel(container.authManager) }
+    initializer { SignupViewModel(container.authManager) }
 }

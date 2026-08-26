@@ -1,6 +1,7 @@
 # Build outputs
 build/
 .gradle/
+.kotlin/
 out/
 *.apk
 *.aab
@@ -27,3 +28,6 @@ Thumbs.db
 *.jks
 *.keystore
 release-key.properties
+
+# Environment config (never commit, contains CloudBase keys)
+app/src/main/.env

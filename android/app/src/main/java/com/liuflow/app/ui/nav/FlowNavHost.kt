@@ -16,6 +16,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.liuflow.app.AppContainer
+import com.liuflow.app.auths.nav.AuthGuard
+import com.liuflow.app.auths.nav.AuthRoutes
+import com.liuflow.app.auths.ui.LoginScreen
+import com.liuflow.app.auths.ui.LoginViewModel
+import com.liuflow.app.auths.ui.SignupScreen
+import com.liuflow.app.auths.ui.SignupViewModel
 import com.liuflow.app.ui.components.BottomNavBar
 import com.liuflow.app.ui.focus.FocusScreen
 import com.liuflow.app.ui.focus.FocusViewModel
@@ -44,9 +50,13 @@ fun FlowNavHost(container: AppContainer) {
     val factory = remember { flowViewModelFactory(container) }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        AuthGuard(
+            auth = container.authManager,
+            navController = nav
+        ) {
         NavHost(
             navController = nav,
-            startDestination = Routes.Focus,
+            startDestination = AuthRoutes.Login,
             modifier = Modifier.fillMaxSize(),
         ) {
             composable(Routes.Focus) {
@@ -124,6 +134,24 @@ fun FlowNavHost(container: AppContainer) {
                     onBack = { nav.popBackStack() },
                 )
             }
+            composable(AuthRoutes.Login) {
+                val vm: LoginViewModel = viewModel(factory = factory)
+                LoginScreen(
+                    viewModel = vm,
+                    navController = nav,
+                    onSuccess = { /* AuthGuard 自动跳主屏 */ }
+                )
+            }
+            composable(AuthRoutes.Signup) {
+                val vm: SignupViewModel = viewModel(factory = factory)
+                SignupScreen(
+                    viewModel = vm,
+                    navController = nav,
+                    onSuccess = { /* AuthGuard 自动跳主屏 */ }
+                )
+            }
+            // V0.2.3：注册流程合并到单页 SignupScreen，按 step 切 UI，不再走 SignupVerify 路由
+        }
         }
 
         // Bottom nav only on the three tab routes.

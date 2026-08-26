@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.DataObject
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TableView
@@ -44,6 +45,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.material.icons.filled.Logout
 import com.liuflow.app.R
 import com.liuflow.app.data.export.DataExporter
 import com.liuflow.app.ui.theme.LocalFlowColors
@@ -59,6 +61,7 @@ fun MeScreen(
 ) {
     val colors = LocalFlowColors.current
     val s by viewModel.settingsState.collectAsStateWithLifecycle()
+    val isLoggedIn by viewModel.isLoggedIn.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showClearConfirm by remember { mutableStateOf(false) }
@@ -97,6 +100,28 @@ fun MeScreen(
                 Text("ME", color = colors.onSurfaceVariant, style = MaterialTheme.typography.labelSmall)
                 Spacer(Modifier.height(4.dp))
                 Text(stringResource(R.string.me_title), color = colors.onSurface, style = MaterialTheme.typography.headlineMedium)
+            }
+
+            // 调试入口（仅 DEBUG build 可见）
+            if (com.liuflow.app.BuildConfig.DEBUG) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 4.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(colors.surfaceContainer)
+                        .clickable { context.startActivity(android.content.Intent(context, com.liuflow.app.debug.DebugActivity::class.java)) }
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(Icons.Filled.BugReport, contentDescription = null, tint = colors.onSurfaceVariant)
+                    Spacer(Modifier.size(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("CloudBase 调试面板", color = colors.onSurface, style = MaterialTheme.typography.bodyLarge)
+                        Text("调 12 个 CloudBase 接口（PG CRUD + 认证）", color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+                    }
+                    Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = colors.onSurfaceVariant)
+                }
             }
 
             Column(
@@ -178,6 +203,31 @@ fun MeScreen(
                     Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = colors.onSurfaceVariant)
                 }
 
+                // V0.2.2: 退出登录（已登录才显示；判定用 isLoggedIn，不依赖 email 字段）
+                if (isLoggedIn) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(colors.surfaceContainer)
+                            .clickable { viewModel.signOut() }
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(Icons.Filled.Logout, contentDescription = null, tint = colors.onSurfaceVariant)
+                        Spacer(Modifier.size(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("退出登录", color = colors.onSurface, style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                text = maskAccount(viewModel.accountLabel),
+                                color = colors.onSurfaceVariant,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                        Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = colors.onSurfaceVariant)
+                    }
+                }
+
                 Spacer(Modifier.height(8.dp))
                 SectionHeader(stringResource(R.string.me_section_about))
                 Row(
@@ -223,6 +273,25 @@ fun MeScreen(
             },
         )
     }
+}
+
+/**
+ * 账户脱敏显示：
+ *   - 邮箱：ye****@example.com
+ *   - 其它（uid: xxxxx / username）：取前 2 字符 + ****
+ */
+private fun maskAccount(account: String?): String {
+    if (account.isNullOrBlank()) return "已登录"
+    val at = account.indexOf('@')
+    if (at > 1) {
+        val name = account.substring(0, at)
+        val domain = account.substring(at)
+        val visible = if (name.length <= 2) name else name.substring(0, 2)
+        return "$visible****$domain"
+    }
+    // 无 @：截前 2 字符
+    val visible = if (account.length <= 4) account else account.substring(0, 4)
+    return "$visible****"
 }
 
 @Composable

@@ -26,6 +26,12 @@ kotlinx-serialization = "1.7.1"
 # Documents (CSV export)
 opencsv = "5.9"
 
+# HTTP / Security / Image loading (auths/ module)
+okhttp = "4.12.0"
+security-crypto = "1.1.0-alpha06"
+coil = "2.5.0"
+gson = "2.10.1"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
@@ -61,6 +67,13 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 
 # CSV export
 opencsv = { group = "com.opencsv", name = "opencsv", version.ref = "opencsv" }
+
+# Auths/ module deps
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 # Test
 junit = { group = "junit", name = "junit", version = "4.13.2" }
