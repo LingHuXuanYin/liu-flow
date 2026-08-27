@@ -38,16 +38,23 @@ class LoginViewModel(
     fun signIn() {
         val u = _username.value
         val p = _password.value
+        android.util.Log.i("AuthFlow", "[VM] LoginViewModel.signIn() entry, u='$u' pLen=${p.length}")
         if (u.isBlank() || p.isBlank()) {
             _state.value = AuthState.Error("请输入用户名和密码")
             return
         }
 
         viewModelScope.launch {
+            android.util.Log.i("AuthFlow", "[VM] LoginViewModel.signIn() coroutine started, state=Loading")
             _state.value = AuthState.Loading
             auth.signIn(u, p)
-                .onSuccess { _state.value = AuthState.Success }
+                .also { android.util.Log.i("AuthFlow", "[VM] LoginViewModel.signIn() auth.signIn returned, success=${it.isSuccess}") }
+                .onSuccess {
+                    android.util.Log.i("AuthFlow", "[VM] LoginViewModel.signIn() onSuccess → state=Success")
+                    _state.value = AuthState.Success
+                }
                 .onFailure { e ->
+                    android.util.Log.e("AuthFlow", "[VM] LoginViewModel.signIn() onFailure: ${e.javaClass.simpleName}: ${e.message}", e)
                     _state.value = AuthState.Error(e.message ?: "登录失败")
                 }
         }

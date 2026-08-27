@@ -1,5 +1,6 @@
 package com.liuflow.app.auths.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -58,9 +60,18 @@ fun SignupScreen(
     val confirm by viewModel.confirm.collectAsState()
     val code by viewModel.verificationCode.collectAsState()
     val countdown by viewModel.countdown.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(state) {
-        if (state is AuthState.Success) onSuccess()
+        when (state) {
+            is AuthState.Registered -> {
+                // 注册成功：不自动登录，弹 Toast + popBackStack 回登录页
+                Toast.makeText(context, "注册成功，请登录", Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
+            }
+            is AuthState.Success -> onSuccess()  // 兼容旧路径（注册目前不再触发 Success）
+            else -> Unit
+        }
     }
 
     Surface(
@@ -132,7 +143,10 @@ fun SignupScreen(
                     modifier = Modifier.weight(1f)
                 )
                 Button(
-                    onClick = { viewModel.fetchVerificationCode() },
+                    onClick = {
+                        android.util.Log.i("AuthFlow", "[UI] SignupScreen 获取验证码 button clicked")
+                        viewModel.fetchVerificationCode()
+                    },
                     enabled = email.isNotBlank()
                         && countdown == 0
                         && state !is AuthState.Loading
@@ -157,7 +171,10 @@ fun SignupScreen(
             Spacer(Modifier.height(8.dp))
             PrimaryButton(
                 text = "注册",
-                onClick = viewModel::signUp,
+                onClick = {
+                    android.util.Log.i("AuthFlow", "[UI] SignupScreen 注册 button clicked")
+                    viewModel.signUp()
+                },
                 loading = state is AuthState.Loading,
                 enabled = email.isNotBlank() && username.isNotBlank()
                     && password.isNotBlank() && confirm.isNotBlank()

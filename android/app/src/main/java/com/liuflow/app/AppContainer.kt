@@ -53,9 +53,11 @@ class AppContainer(appContext: Context) {
     val authManager = AuthManager(appContext, authApi).also {
         // 启动时把本地存的 accessToken 注入 cloudbase 实例（让业务请求自动带 Authorization）
         it.restoreAccessToken()
+        Log.i("AuthFlow", "[Init] AuthManager restored, hasToken=${it.accessToken() != null}, username='${it.username()}'")
     }
 
     init {
+        Log.i("AuthFlow", "[Init] AppContainer init: BuildConfig.TCB_ENV_ID='${BuildConfig.TCB_ENV_ID}' length=${BuildConfig.TCB_ENV_ID.length} TCB_REGION='${BuildConfig.TCB_REGION}'")
         logStorageLocations(appContext)
     }
 

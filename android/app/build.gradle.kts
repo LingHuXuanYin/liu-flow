@@ -53,12 +53,11 @@ android {
             versionNameSuffix = "-debug"
         }
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            // V0.6.1 临时关闭 R8 minify + 资源压缩，让 release 行为等同 debug。
+            // 卡死 / 不跳转全是 R8 干的事——关掉这些坑就没了，先把 release 业务跑通。
+            // 之后想优化包体积再开 R8 + 按 proguard-rules.pro 注释里的清单补 keep 规则。
+            isMinifyEnabled = false
+            isShrinkResources = false
             // Default to debug signing for now; user can override.
             signingConfig = signingConfigs.getByName("debug")
         }

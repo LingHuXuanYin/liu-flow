@@ -63,6 +63,7 @@ class AuthManager(
 
     /** 文档 §1.1.4.1 步骤 1：发邮箱验证码 */
     suspend fun sendSignupCode(email: String): Result<String> = withContext(Dispatchers.IO) {
+        android.util.Log.i("AuthFlow", "[Mgr] AuthManager.sendSignupCode() entered, email='$email'")
         // 文档示范 target="NON_USER"；实测当前目标端只接受 "ANY"，其他值都 400 enum invalid
         val body = mapOf("email" to email, "target" to "ANY")
         when (val r = api.request<Map<String, Any>>(
@@ -72,16 +73,21 @@ class AuthManager(
             typeToken = mapType,
         )) {
             is ApiResult.Success -> {
+                android.util.Log.i("AuthFlow", "[Mgr] sendSignupCode Success, response keys=${r.data.keys}")
                 val vid = r.data["verification_id"] as? String
                 if (vid == null) Result.failure(IllegalStateException("响应无 verification_id"))
                 else Result.success(vid)
             }
-            is ApiResult.Failure -> Result.failure(AuthException(r.code, r.message))
+            is ApiResult.Failure -> {
+                android.util.Log.e("AuthFlow", "[Mgr] sendSignupCode Failure code=${r.code} msg=${r.message}")
+                Result.failure(AuthException(r.code, r.message))
+            }
         }
     }
 
     /** 文档 §1.1.4.1 步骤 2：验邮箱验证码，拿到 verificationToken */
     suspend fun verifyCode(verificationId: String, code: String): Result<String> = withContext(Dispatchers.IO) {
+        android.util.Log.i("AuthFlow", "[Mgr] AuthManager.verifyCode() entered, vid='$verificationId' codeLen=${code.length}")
         val body = mapOf("verification_id" to verificationId, "verification_code" to code)
         when (val r = api.request<Map<String, Any>>(
             method = "POST",
@@ -90,17 +96,32 @@ class AuthManager(
             typeToken = mapType,
         )) {
             is ApiResult.Success -> {
+                android.util.Log.i("AuthFlow", "[Mgr] verifyCode Success, response keys=${r.data.keys}")
                 val vt = r.data["verification_token"] as? String
                 if (vt == null) Result.failure(IllegalStateException("响应无 verification_token"))
                 else Result.success(vt)
             }
-            is ApiResult.Failure -> Result.failure(AuthException(r.code, r.message))
+            is ApiResult.Failure -> {
+                android.util.Log.e("AuthFlow", "[Mgr] verifyCode Failure code=${r.code} msg=${r.message}")
+                Result.failure(AuthException(r.code, r.message))
+            }
         }
     }
 
     /**
      * 文档 §1.1.4.1 步骤 3：注册（带 username + password）。
-     * 注册成功即返回 accessToken，自动登录。
+     *
+     * **注册成功不自动登录**——不写本地 token、不置 `_loggedIn = true`。
+     * UI 监听到 `AuthState.Registered` 后弹 Toast + popBackStack 回登录页，
+     * 让用户用新账号密码登录（见 `SignupViewModel.signUp()` + `SignupScreen`）。
+     *
+     * 为什么不自动登录：
+     * - 用户体验上，注册是「开账号」动作，登录是「进系统」动作，应该分开。
+     * - 即使 `/signup` 响应里返回了 accessToken，把它写本地会让 `AuthManager.loggedIn = true`，
+     *   `AuthGuard` 监听到立刻跳主屏（`Routes.Focus`），用户失去"刚刚注册的成就感 + 输密码的明确反馈"。
+     * - 真实业务里这种设计也更清晰：注册流程即"提交注册信息"，登录流程即"用账号进系统"。
+     *
+     * 如果未来需要给注册响应里的 token 写本地，调用方应显式调 `persistFromResponse(r.data, email)`。
      */
     suspend fun signUp(
         email: String,
@@ -108,6 +129,7 @@ class AuthManager(
         username: String,
         password: String,
     ): Result<Unit> = withContext(Dispatchers.IO) {
+        android.util.Log.i("AuthFlow", "[Mgr] AuthManager.signUp() entered, email='$email' u='$username' vtLen=${verificationToken.length}")
         val body = mapOf(
             "email" to email,
             "verification_token" to verificationToken,
@@ -121,22 +143,42 @@ class AuthManager(
             typeToken = mapType,
         )) {
             is ApiResult.Success -> {
-                persistFromResponse(r.data, emailOverride = email)
+                android.util.Log.i("AuthFlow", "[Mgr] signUp Success code=${r.code}")
+                // 注意：这里故意不调 persistFromResponse / 不写 _loggedIn。
+                // 响应里的 access_token / refresh_token 仅用于让接口层 200 校验通过，
+                // 不下沉到本地存储 / 触发 AuthGuard 跳主屏。
                 Result.success(Unit)
             }
-            is ApiResult.Failure -> Result.failure(AuthException(r.code, r.message))
+            is ApiResult.Failure -> {
+                android.util.Log.e("AuthFlow", "[Mgr] signUp Failure code=${r.code} msg=${r.message}")
+                Result.failure(AuthException(r.code, r.message))
+            }
         }
     }
 
     /**
      * 文档 §1.1.4.2：账号密码登录。
      * body 是 `{ username, password }`（**username 不是 email**）。
+     *
+     * 关键：signin 必须用账号密码向云端申请**新的** access_token + refresh_token，
+     * 绝不能携带过期的旧 Authorization 头。
+     *
+     * - App 启动时 `AppContainer.restoreAccessToken()` 会把本地存的 accessToken 注入
+     *   `CloudBaseAuthApi.accessToken`，而 `CloudBaseAuthApi.request()` 对**所有**端点
+     *   都自动附加 `Authorization: Bearer <token>`。如果用户带着过期 token 进入登录页
+     *   再点登录，这里就必须先把 `api.accessToken` 临时清空，否则后端会返
+     *   `HTTP 400 failed_precondition / token expiry`（见 2026-08-28 00:11 Logcat 抓的 case）。
+     * - 登录失败时清掉本地旧 token，避免下次启动又用过期 token「伪登录」成功、
+     *   但所有业务请求都 401 的灰色状态。
      */
     suspend fun signIn(
         username: String,
         password: String,
         captchaToken: String? = null,
     ): Result<Unit> = withContext(Dispatchers.IO) {
+        android.util.Log.i("AuthFlow", "[Mgr] AuthManager.signIn() entered, u='$username' pLen=${password.length} hasCaptcha=${captchaToken != null}")
+        // 临时把 api 的 accessToken 清空，signin 请求不带 Authorization 头
+        api.updateAccessToken(null)
         val body = mutableMapOf<String, Any>("username" to username, "password" to password)
         val custom = if (captchaToken != null) mapOf("x-captcha-token" to captchaToken) else emptyMap()
         when (val r = api.request<Map<String, Any>>(
@@ -147,10 +189,17 @@ class AuthManager(
             typeToken = mapType,
         )) {
             is ApiResult.Success -> {
+                android.util.Log.i("AuthFlow", "[Mgr] signIn Success code=${r.code}, response keys=${r.data.keys}")
                 persistFromResponse(r.data, emailOverride = null)
                 Result.success(Unit)
             }
-            is ApiResult.Failure -> Result.failure(AuthException(r.code, r.message))
+            is ApiResult.Failure -> {
+                android.util.Log.e("AuthFlow", "[Mgr] signIn Failure code=${r.code} msg=${r.message}")
+                // 登录失败：清掉本地旧 token（accessToken / refreshToken），状态回到「未登录」，
+                // 强制用户重新登录，避免下次启动又用过期 token 走通 `hasToken()` 但请求全 401
+                signOut()
+                Result.failure(AuthException(r.code, r.message))
+            }
         }
     }
 
@@ -161,6 +210,7 @@ class AuthManager(
     suspend fun refresh(): Result<Unit> = withContext(Dispatchers.IO) {
         val rt = refreshToken()
             ?: return@withContext Result.failure(IllegalStateException("本地无 refresh_token"))
+        android.util.Log.i("AuthFlow", "[Mgr] AuthManager.refresh() entered")
         val body = mapOf("refresh_token" to rt)
         when (val r = api.request<Map<String, Any>>(
             method = "POST",
@@ -169,10 +219,12 @@ class AuthManager(
             typeToken = mapType,
         )) {
             is ApiResult.Success -> {
+                android.util.Log.i("AuthFlow", "[Mgr] refresh Success")
                 persistFromResponse(r.data, emailOverride = null)
                 Result.success(Unit)
             }
             is ApiResult.Failure -> {
+                android.util.Log.e("AuthFlow", "[Mgr] refresh Failure code=${r.code} msg=${r.message}")
                 // 续期失败 → 清本地，强制重新登录
                 signOut()
                 Result.failure(AuthException(r.code, r.message))
@@ -186,23 +238,29 @@ class AuthManager(
      * 文档 §1.1.4 没列路径，但 Debug 入口确认是 `/auth/v1/captcha` + `/auth/v1/captcha/verify`。
      */
     suspend fun getCaptcha(): Result<Pair<String, String>> = withContext(Dispatchers.IO) {
+        android.util.Log.i("AuthFlow", "[Mgr] AuthManager.getCaptcha() entered")
         when (val r = api.request<Map<String, Any>>(
             method = "GET",
             path = "/auth/v1/captcha",
             typeToken = mapType,
         )) {
             is ApiResult.Success -> {
+                android.util.Log.i("AuthFlow", "[Mgr] getCaptcha Success")
                 val id = r.data["captcha_id"] as? String
                 val url = r.data["captcha_url"] as? String
                 if (id == null || url == null)
                     Result.failure(IllegalStateException("响应缺 captcha_id / captcha_url"))
                 else Result.success(id to url)
             }
-            is ApiResult.Failure -> Result.failure(AuthException(r.code, r.message))
+            is ApiResult.Failure -> {
+                android.util.Log.e("AuthFlow", "[Mgr] getCaptcha Failure code=${r.code} msg=${r.message}")
+                Result.failure(AuthException(r.code, r.message))
+            }
         }
     }
 
     suspend fun verifyCaptcha(captchaId: String, code: String): Result<String> = withContext(Dispatchers.IO) {
+        android.util.Log.i("AuthFlow", "[Mgr] AuthManager.verifyCaptcha() entered, captchaId='$captchaId' code='$code'")
         val body = mapOf("captcha_id" to captchaId, "code" to code)
         when (val r = api.request<Map<String, Any>>(
             method = "POST",
@@ -211,11 +269,15 @@ class AuthManager(
             typeToken = mapType,
         )) {
             is ApiResult.Success -> {
+                android.util.Log.i("AuthFlow", "[Mgr] verifyCaptcha Success")
                 val token = r.data["captcha_token"] as? String
                 if (token == null) Result.failure(IllegalStateException("响应无 captcha_token"))
                 else Result.success(token)
             }
-            is ApiResult.Failure -> Result.failure(AuthException(r.code, r.message))
+            is ApiResult.Failure -> {
+                android.util.Log.e("AuthFlow", "[Mgr] verifyCaptcha Failure code=${r.code} msg=${r.message}")
+                Result.failure(AuthException(r.code, r.message))
+            }
         }
     }
 

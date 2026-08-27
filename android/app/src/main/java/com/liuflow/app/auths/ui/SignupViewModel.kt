@@ -73,6 +73,7 @@ class SignupViewModel(
     /** 点"获取验证码"：发码 → 存 vid → 启动 60s 倒计时 */
     fun fetchVerificationCode() {
         val email = _email.value
+        android.util.Log.i("AuthFlow", "[VM] SignupViewModel.fetchVerificationCode() entry, email='$email'")
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             _state.value = AuthState.Error("邮箱格式不正确")
             return
@@ -80,14 +81,18 @@ class SignupViewModel(
         if (_countdown.value > 0) return  // 倒计时未结束，UI 也应 disable，这里兜底
 
         viewModelScope.launch {
+            android.util.Log.i("AuthFlow", "[VM] fetchVerificationCode coroutine started, state=Loading")
             _state.value = AuthState.Loading
             auth.sendSignupCode(email)
+                .also { android.util.Log.i("AuthFlow", "[VM] sendSignupCode returned, success=${it.isSuccess}") }
                 .onSuccess { vid ->
+                    android.util.Log.i("AuthFlow", "[VM] sendSignupCode onSuccess, vid='$vid'")
                     pendingVerificationId = vid
                     _state.value = AuthState.Idle
                     startCountdown()
                 }
                 .onFailure { e ->
+                    android.util.Log.e("AuthFlow", "[VM] sendSignupCode onFailure: ${e.javaClass.simpleName}: ${e.message}", e)
                     _state.value = AuthState.Error(e.message ?: "发送验证码失败")
                 }
         }
@@ -102,6 +107,7 @@ class SignupViewModel(
         val pwd = _password.value
         val cfm = _confirm.value
 
+        android.util.Log.i("AuthFlow", "[VM] SignupViewModel.signUp() entry, codeLen=${code.length} vidNull=${vid == null} email='$email' u='$username'")
         if (!isFormValid(email, username, pwd, cfm)) return
         if (code.length != 6) {
             _state.value = AuthState.Error("请输入 6 位验证码")
@@ -113,19 +119,27 @@ class SignupViewModel(
         }
 
         viewModelScope.launch {
+            android.util.Log.i("AuthFlow", "[VM] signUp coroutine started, state=Loading")
             _state.value = AuthState.Loading
             // 步骤 1：验码
+            android.util.Log.i("AuthFlow", "[VM] signUp step 1: verifyCode")
             val vtResult = auth.verifyCode(vid, code)
+            android.util.Log.i("AuthFlow", "[VM] signUp verifyCode returned, success=${vtResult.isSuccess}")
             val verificationToken = vtResult.getOrElse {
+                android.util.Log.e("AuthFlow", "[VM] signUp verifyCode failed: ${it.javaClass.simpleName}: ${it.message}", it)
                 _state.value = AuthState.Error(it.message ?: "验证码错误")
                 return@launch
             }
             // 步骤 2：注册
+            android.util.Log.i("AuthFlow", "[VM] signUp step 2: register with verificationToken len=${verificationToken.length}")
             auth.signUp(email, verificationToken, username, pwd)
+                .also { android.util.Log.i("AuthFlow", "[VM] signUp register returned, success=${it.isSuccess}") }
                 .onSuccess {
-                    _state.value = AuthState.Success
+                    android.util.Log.i("AuthFlow", "[VM] signUp onSuccess → state=Registered")
+                    _state.value = AuthState.Registered
                 }
                 .onFailure { e ->
+                    android.util.Log.e("AuthFlow", "[VM] signUp onFailure: ${e.javaClass.simpleName}: ${e.message}", e)
                     _state.value = AuthState.Error(e.message ?: "注册失败")
                 }
         }

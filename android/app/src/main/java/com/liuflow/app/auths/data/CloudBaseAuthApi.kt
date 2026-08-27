@@ -53,9 +53,9 @@ class CloudBaseAuthApi(
     val accessTokenFlow: StateFlow<String?> = _accessTokenFlow.asStateFlow()
 
     private val http: OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
+        .connectTimeout(10, TimeUnit.SECONDS)   // 30s→10s：R8 挂死时让用户少等点
+        .readTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(10, TimeUnit.SECONDS)
         .build()
 
     /**
@@ -87,13 +87,20 @@ class CloudBaseAuthApi(
         type: Class<T>? = null,
         typeToken: TypeToken<T>? = null,
     ): ApiResult<T> = withContext(Dispatchers.IO) {
-        if (envId.isBlank()) return@withContext ApiResult.Failure(0, "CloudBase 配置缺失（.env 文件未填写）")
+        if (envId.isBlank()) {
+            // 之前这个分支没 Log.e，release 模式下命中完全静默 —— V0.6.1 修
+            Log.e(TAG, "TCB_ENV_ID is empty（BuildConfig.TCB_ENV_ID=\"\"）— .env 文件未读出 / 键名拼错 / 文件被 git 钩子改回去了")
+            return@withContext ApiResult.Failure(0, "CloudBase 配置缺失（.env 文件未填写）")
+        }
+        Log.i(TAG, "[Api] request entry: $method $path, envId.len=${envId.length}, hasToken=${accessToken != null}")
 
         val url = "$baseUrl$path"
         val upper = method.uppercase()
         val isGet = upper == "GET"
         val requestBody = if (!isGet) {
-            (if (body != null) gson.toJson(body) else "{}").toRequestBody(JSON)
+            val jsonBody = (if (body != null) gson.toJson(body) else "{}")
+            Log.i(TAG, "[Api] request body (${jsonBody.length} bytes): ${jsonBody.take(500)}")
+            jsonBody.toRequestBody(JSON)
         } else null
 
         val builder = Request.Builder().url(url)
@@ -121,11 +128,10 @@ class CloudBaseAuthApi(
         customHeaders.forEach { (k, v) -> builder.header(k, v) }
 
         try {
+            Log.i(TAG, "[Api] about to http.newCall(...).execute() for $upper $url")
             http.newCall(builder.build()).execute().use { resp ->
                 val text = resp.body?.string() ?: ""
-                if (BuildConfig.DEBUG_LOG_NETWORK) {
-                    Log.d(TAG, "$upper $url → ${resp.code}: ${text.take(200)}")
-                }
+                Log.i(TAG, "[Api] $upper $url → ${resp.code}, bodyLen=${text.length}, body[:200]=${text.take(200)}")
                 if (resp.isSuccessful) {
                     val wantsTyped = type != null || typeToken != null
                     if (!wantsTyped) {

@@ -29,16 +29,32 @@ fun AuthGuard(
     val isAuthRoute = currentRoute in AuthRoutes.All
 
     LaunchedEffect(loggedIn, currentRoute) {
+        android.util.Log.i("AuthFlow", "[Guard] LaunchedEffect fired: loggedIn=$loggedIn isAuthRoute=$isAuthRoute currentRoute=$currentRoute")
         when {
             !loggedIn && !isAuthRoute && currentRoute != null -> {
-                navController.navigate(AuthRoutes.Login) {
-                    popUpTo(0) { inclusive = true }
+                android.util.Log.i("AuthFlow", "[Guard] → navigate(AuthRoutes.Login)")
+                try {
+                    navController.navigate(AuthRoutes.Login) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                    android.util.Log.i("AuthFlow", "[Guard] navigate Login returned")
+                } catch (e: Exception) {
+                    android.util.Log.e("AuthFlow", "[Guard] navigate Login threw", e)
                 }
             }
             loggedIn && isAuthRoute -> {
-                navController.navigate(Routes.Focus) {
-                    popUpTo(0) { inclusive = true }
+                android.util.Log.i("AuthFlow", "[Guard] → navigate(Routes.Focus), currentRoute=$currentRoute")
+                try {
+                    navController.navigate(Routes.Focus) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                    android.util.Log.i("AuthFlow", "[Guard] navigate Focus returned (post-popUpTo)")
+                } catch (e: Exception) {
+                    android.util.Log.e("AuthFlow", "[Guard] navigate Focus threw", e)
                 }
+            }
+            else -> {
+                android.util.Log.i("AuthFlow", "[Guard] no-op branch (loggedIn=$loggedIn isAuthRoute=$isAuthRoute)")
             }
         }
     }

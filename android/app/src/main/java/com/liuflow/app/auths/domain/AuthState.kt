@@ -9,8 +9,14 @@ package com.liuflow.app.auths.domain
 sealed class AuthState {
     object Idle : AuthState()
     object Loading : AuthState()
-    /** 登录 / 注册成功（AuthGuard 监 AuthManager.loggedIn 跳主屏） */
+    /** 登录成功（AuthGuard 监 AuthManager.loggedIn 跳主屏） */
     object Success : AuthState()
+    /**
+     * 注册成功（**不**自动登录）。
+     * UI 监听后弹「注册成功，请登录」Toast + popBackStack 回登录页，
+     * 让用户用刚注册的账号密码登录。不会触发 AuthGuard 跳主屏。
+     */
+    object Registered : AuthState()
     /** 错误提示（直接显示给用户） */
     data class Error(val message: String) : AuthState()
 }

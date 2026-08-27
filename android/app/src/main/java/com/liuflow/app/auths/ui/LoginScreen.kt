@@ -109,7 +109,10 @@ fun LoginScreen(
             Spacer(Modifier.height(8.dp))
             PrimaryButton(
                 text = "登录",
-                onClick = viewModel::signIn,
+                onClick = {
+                    android.util.Log.i("AuthFlow", "[UI] LoginScreen 登录 button clicked")
+                    viewModel.signIn()
+                },
                 loading = state is AuthState.Loading,
                 enabled = username.isNotBlank() && password.isNotBlank()
             )
